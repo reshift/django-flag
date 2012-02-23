@@ -1,0 +1,5 @@
+<form class="flag-form flag-{% if flag.id %}flagged{%  else  %}unflagged{%  endif  %}" action="/flag/set_flag" method="post">
+{% csrf_token %}
+{{form}}
+<button class="btn">{% if flag.id %}  {{flagged_label}}  {%  else  %} {{unflagged_label}} {%  endif  %}</button>
+</form>
