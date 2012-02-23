@@ -1,7 +1,7 @@
-Flags APP
+Flag for Django
 =========
 
-Flags is a flexible flagging system
+Flag is a flexible flagging system
 
 Using this app, one can provide flags for any model. Some possibilities include bookmarks, marking important, friends, or flag as offensive.
 Flags may be per-user, meaning that each user can mark an item individually, or global, meaning that the item is either marked or it is not marked, and any user who changes that, changes it for everyone.
