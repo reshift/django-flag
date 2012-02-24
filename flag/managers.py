@@ -11,7 +11,7 @@ class FlagTypeManager(models.Manager):
   '''
   def get_default_type(self, *args, **kwargs):
     '''
-    Returns default type of valuation according to settings or else
+    Returns default type of flag according to settings or else
     the one with pk
     '''
     default_ftype = self.get(pk=default_ftype_pk, *args, **kwargs)
@@ -22,16 +22,18 @@ class FlagTypeManager(models.Manager):
     Returns type according to the title if provided or else the default
     type.
     '''
-    ftype=self.get_default_type(*args, **kwargs)
-    ''' disable for the moment
+    #print for_ftype
     if for_ftype:
       ftype=self.get(slug=for_ftype, *args, **kwargs)
     else:
       ftype=self.get_default_type(*args, **kwargs)
-    '''    
+   
     return ftype
   
 class FlagManager(models.Manager):
+  '''
+  Flag manager
+  '''
   def filter_for_obj(self, obj, *args, **kwargs):
     '''
     Filter the valuations according to the object.
