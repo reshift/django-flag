@@ -5,16 +5,43 @@ from django.template import RequestContext
 from django.shortcuts import render_to_response, redirect
 from django.contrib.contenttypes.models import ContentType
 from flag.models import *
+from flag.forms import *
 from django.utils import simplejson
 from django.core import serializers
 from django.views.decorators.csrf import csrf_protect
+from django.views.decorators.http import require_POST
 
 @csrf_protect
-def setFlag(request):
+@require_POST
+def submit(request):
   '''
-  Sets a flag or delete's t if exists
+  The submissions of flag forms will be handled here.
   '''
+  form = FlagForm(request)    
+  success = False
   
+  if form.is_valid():
+    # Delete if instance is found
+    if form.instance.id:
+      flag = form.instance.delete()
+    else:  
+      flag = form.save()
+      
+    success = True
+    redirect = request.REQUEST.get('next', request.META.get('HTTP_REFERER'))   
+  else:        
+    redirect = '/'
+    
+  if not request.is_ajax() or request.POST.get('ajax', False):
+    return HttpResponseRedirect(redirect)
+  else:
+    data = serializers.serialize("json", flag)
+    return HttpResponse(data, mimetype='application/javascript')
+
+'''
+DEPRICIATED
+@csrf_protect
+def setFlag(request):
   delete = False
   
   # Get our values
@@ -59,3 +86,4 @@ def setFlag(request):
   else:
     next = data.get("next", request.META.get('HTTP_REFERER'))
     return HttpResponseRedirect(next)
+'''    
