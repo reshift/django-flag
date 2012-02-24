@@ -21,9 +21,6 @@ class FlagType(models.Model):
 
   def __unicode__(self):
     return self.title.title()
-
-  def choice_queryset(self):
-    return self.flag_set.all()
   
 class Flag(models.Model):
   '''
