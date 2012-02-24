@@ -26,7 +26,15 @@ class FlagForm(ModelForm):
   content_type  = forms.ModelChoiceField(queryset=ContentType.objects.all(), widget=forms.HiddenInput)
   object_pk     = forms.CharField(widget=forms.HiddenInput)
   ftype         = forms.ModelChoiceField(queryset=FlagType.objects.all(), widget=forms.HiddenInput)
- 
+  
+  def get_id(self):
+    '''
+    Returns the id for the html form.
+    '''
+    ctype = self.data.get('content_type', self.initial.get('content_type','').id)
+    object_pk = self.data.get('object_pk', self.initial.get('object_pk',''))
+    return "flag_%s_%s" %(ctype, object_pk)
+  
   def get_instance(self, request, *args, **kwargs):
     '''
     Returns instance according to the object and request (user,

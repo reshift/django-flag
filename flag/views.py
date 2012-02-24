@@ -10,6 +10,7 @@ from django.utils import simplejson
 from django.core import serializers
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.http import require_POST
+from django.forms.models import model_to_dict
 
 @csrf_protect
 @require_POST
@@ -21,6 +22,9 @@ def submit(request):
   success = False
   
   if form.is_valid():
+    # Get ftype for later reference
+    ftype = form.instance.ftype
+    
     # Delete if instance is found
     if form.instance.id:
       flag = form.instance.delete()
@@ -29,14 +33,20 @@ def submit(request):
       
     success = True
     redirect = request.REQUEST.get('next', request.META.get('HTTP_REFERER'))   
-  else:        
+  else: 
     redirect = '/'
     
   if not request.is_ajax() or request.POST.get('ajax', False):
     return HttpResponseRedirect(redirect)
   else:
-    data = serializers.serialize("json", flag)
-    return HttpResponse(data, mimetype='application/javascript')
+    data = {}
+    data['success'] = str(success)
+    data['ftype'] = model_to_dict(ftype)
+    
+    if flag is not None:
+      data['object'] = model_to_dict(flag)
+
+    return HttpResponse(simplejson.dumps(data), mimetype='application/javascript')
 
 '''
 DEPRICIATED

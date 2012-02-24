@@ -1,4 +1,4 @@
-<form class="flag-form flag-{% if flag_form.instance.id %}flagged{%  endif  %}" action="{% url flag-submit %}" method="post">
+<form class="flag-form {% if flag_form.instance.id %}flag-flagged{%  endif  %}" action="{% url flag-submit %}" method="post" id="{{flag_form.get_id}}">
 {% csrf_token %}
 {{flag_form}}
 <button class="btn">{% if flag_form.instance.id %}  {{ftype.flagged_label}}  {%  else  %} {{ftype.label}} {%  endif  %}</button>
