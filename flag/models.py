@@ -21,6 +21,9 @@ class FlagType(models.Model):
 
   def __unicode__(self):
     return self.title.title()
+
+  def flag_queryset(self):
+    return self.flag_set.all()
   
 class Flag(models.Model):
   '''
@@ -66,8 +69,10 @@ class Flag(models.Model):
   class Meta:
     unique_together = ("content_type", "object_pk", "user", "ftype")
 
+'''
 class FlagCounts(models.Model):
   flag           = models.ForeignKey('Flag', null=False)
   content_type   = models.ForeignKey(ContentType, verbose_name=_('content type'), related_name="content_type_set_for_%(class)s")
   object_pk      = models.TextField(_('object ID'))
   content_object = generic.GenericForeignKey(ct_field="content_type", fk_field="object_pk")
+'''  

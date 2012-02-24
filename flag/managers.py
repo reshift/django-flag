@@ -32,12 +32,12 @@ class FlagTypeManager(models.Manager):
     return ftype
   
 class FlagManager(models.Manager):
-  def filter_for_obj(self, obj, ftype=None, *args, **kwargs):
+  def filter_for_obj(self, obj, *args, **kwargs):
     '''
     Filter the valuations according to the object.
     '''
     ctype, object_pk = ContentType.objects.get_for_model(obj), obj.pk    
-    return self.filter(content_type=ctype, object_pk=object_pk, ftype=ftype, *args, **kwargs)
+    return self.filter(content_type=ctype, object_pk=object_pk, *args, **kwargs)
     
   def get_by_obj_client(self, request, obj=None, content_type=None, object_pk=None, *args, **kwargs):                    
     '''
@@ -54,3 +54,9 @@ class FlagManager(models.Manager):
       return flags_for_obj_by_client[0]
     else:
       return None
+    
+  def get_count(self, obj, *args, **kwargs):
+    '''
+    The number of flags for the object.
+    '''        
+    return self.filter_for_obj(obj, *args, **kwargs).count()

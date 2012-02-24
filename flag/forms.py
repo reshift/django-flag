@@ -44,7 +44,7 @@ class FlagForm(ModelForm):
     '''
 
     if ftype.global_flag:
-      flag = Flag.objects.filter_for_obj(obj, ftype, *args, **kwargs)
+      flag = Flag.objects.filter_for_obj(obj, *args, **kwargs)
       
       if flag:
         instance = flag[0]
@@ -52,7 +52,7 @@ class FlagForm(ModelForm):
         instance = None  
         
     else:
-      instance = Flag.objects.get_by_obj_client(request, obj, ftype=ftype, *args, **kwargs)
+      instance = Flag.objects.get_by_obj_client(request, obj, *args, **kwargs)
 
     return instance
 
