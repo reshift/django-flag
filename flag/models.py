@@ -33,10 +33,8 @@ class Flag(models.Model):
   user      = models.ForeignKey(User, verbose_name=_('user'))
   timestamp = models.DateTimeField(auto_now=True)
   
-  content_type   = models.ForeignKey(ContentType,
-          verbose_name=_('content type'),
-          related_name="content_type_set_for_%(class)s")
-  object_pk      = models.TextField(_('object ID'))
+  content_type   = models.ForeignKey(ContentType, verbose_name=_('content type'), related_name="content_type_set_for_%(class)s")
+  object_pk   = models.CharField(_('object ID'), max_length=200)
   content_object = generic.GenericForeignKey(ct_field="content_type", fk_field="object_pk")
   
   objects = FlagManager()
