@@ -12,11 +12,10 @@
             if(data.object === undefined) {
               $("button", that).text(data.ftype.label);
             }else{
-              $("button", that).text(data.ftype.flagged_label);
+              $("button", that).text(data.ftype.unflag_label);
             }
           }
       });
       return false;
   });
 }( window.jQuery );
-
