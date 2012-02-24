@@ -10,12 +10,12 @@ class FlagType(models.Model):
   '''
   The flag type model.
   ''' 
-  title       = models.CharField(_('title'), max_length=255)
-  slug        = models.SlugField(_('slug'), max_length=50)
-  global_flag = models.BooleanField(default=0, verbose_name='Global flag')
-  description = models.TextField(blank=True, null=True)
-  label = models.CharField(max_length=255, blank=True, null=True)
-  flagged_label = models.CharField(max_length=255, blank=True, null=True)
+  title         = models.CharField(_('title'), max_length=255, help_text='A short, descriptive title for this flag.')
+  slug          = models.SlugField(_('slug'), max_length=50, help_text='The machine-name for this flag. It may be up to 50 characters long and may only contain lowercase letters, underscores, and numbers. It will be used in URLs and in all API calls.')
+  global_flag   = models.BooleanField(default=0, verbose_name='Global flag', help_text='If checked, flag is considered "global" and each object is either flagged or not. If unchecked, each user has individual flags on content.')
+  label         = models.CharField(max_length=255, blank=True, null=True, help_text='The text for the "flag this" link for this flag.')
+  unflag_label  = models.CharField(max_length=255, blank=True, null=True, help_text='The text for the "unflag this" link for this flag.')
+  description   = models.TextField(blank=True, null=True)
   
   objects = FlagTypeManager()
 
@@ -29,13 +29,12 @@ class Flag(models.Model):
   '''
   The flag model.
   ''' 
-  ftype     = models.ForeignKey(FlagType, verbose_name=_('type'))
-  user      = models.ForeignKey(User, verbose_name=_('user'))
-  timestamp = models.DateTimeField(auto_now=True)
-  
-  content_type   = models.ForeignKey(ContentType, verbose_name=_('content type'), related_name="content_type_set_for_%(class)s")
-  object_pk   = models.CharField(_('object ID'), max_length=200)
-  content_object = generic.GenericForeignKey(ct_field="content_type", fk_field="object_pk")
+  ftype           = models.ForeignKey(FlagType, verbose_name=_('type'))
+  user            = models.ForeignKey(User, verbose_name=_('user'))
+  timestamp       = models.DateTimeField(auto_now=True)
+  content_type    = models.ForeignKey(ContentType, verbose_name=_('content type'), related_name="content_type_set_for_%(class)s")
+  object_pk       = models.CharField(_('object ID'), max_length=200)
+  content_object  = generic.GenericForeignKey(ct_field="content_type", fk_field="object_pk")
   
   objects = FlagManager()
   
@@ -67,8 +66,7 @@ class Flag(models.Model):
     unique_together = ("content_type", "object_pk", "user", "ftype")
 
 class FlagCounts(models.Model):
-  flag = models.ForeignKey('Flag', null=False)
-  
+  flag           = models.ForeignKey('Flag', null=False)
   content_type   = models.ForeignKey(ContentType, verbose_name=_('content type'), related_name="content_type_set_for_%(class)s")
   object_pk      = models.TextField(_('object ID'))
   content_object = generic.GenericForeignKey(ct_field="content_type", fk_field="object_pk")
