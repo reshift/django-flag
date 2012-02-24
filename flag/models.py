@@ -50,6 +50,7 @@ class Flag(models.Model):
       return '/'
     
   def save(self, request=None, *args, **kwargs):
+    from django.core.exceptions import ValidationError
     '''
     Save method overriden if `request` var is supplied.
     '''
@@ -60,6 +61,9 @@ class Flag(models.Model):
         # Run validate unique again with user
         self.validate_unique()
 
+    if not self.user.is_authenticated():
+      raise ValidationError('Anonymous flags are not allowed')
+    
     return super(Flag, self).save(*args, **kwargs)
  
   class Meta:

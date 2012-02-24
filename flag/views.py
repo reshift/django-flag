@@ -33,7 +33,7 @@ def submit(request):
       
     success = True
     redirect = request.REQUEST.get('next', request.META.get('HTTP_REFERER'))   
-  else: 
+  else:
     redirect = '/'
     
   if not request.is_ajax() or request.POST.get('ajax', False):
