@@ -8,6 +8,12 @@ Using this app, one can provide flags to any object, just on the basis of templa
 Some possibilities include bookmarks, marking important, friends, or flag as offensive.
 Flags may be per-user, meaning that each user can mark an item individually, or global, meaning that the item is either marked or it is not marked, and any user who changes that, changes it for everyone.
 
+Installation
+------------
+- Run 'pip install https://github.com/hub-nl/nl.hub.django.app.flag/tarball/master'
+- Add 'url(r'^submit/$', 'flag.views.submit', name = 'flag-submit'), ' to your urls.py
+- Add '{% load flag_tags %}' to the top of your template
+
 Usage
 -----
 
