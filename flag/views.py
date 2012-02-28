@@ -11,6 +11,7 @@ from django.core import serializers
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.http import require_POST
 from django.forms.models import model_to_dict
+from django.template.loader import render_to_string
 
 @csrf_protect
 @require_POST
@@ -18,32 +19,28 @@ def submit(request):
   '''
   The submissions of flag forms will be handled here.
   '''
-  #print request.POST.getlist('flags')
-  #print request.POST
-  form = FlagForm(request)    
+  flag_form = FlagForm(request)    
   success = False
-
-  if form.is_valid():
-    # Get ftype for later reference
-    #ftypes = form.instance.ftype
-    
-    # Delete if flag is not set
-    flag = form.save()
-      
+  print request.POST
+  if flag_form.is_valid():
+    flag = flag_form.save()
     success = True
     redirect = request.REQUEST.get('next', request.META.get('HTTP_REFERER'))  
   else:
-    print form.errors
     redirect = '/'
     
   if not request.is_ajax() or request.POST.get('ajax', False):
     return HttpResponseRedirect(redirect)
   else:
+    '''
     data = {}
     data['success'] = str(success)
     data['ftype'] = model_to_dict(ftype)
     
     if flag is not None:
       data['object'] = model_to_dict(flag)
-
+    
     return HttpResponse(simplejson.dumps(data), mimetype='application/javascript')
+    '''
+    return HttpResponse(render_to_string('flag/form.html', context_instance=RequestContext(request)))
+    
