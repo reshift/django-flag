@@ -1,4 +1,4 @@
-<form class="flag-form {% if flag_form.instance.id %}flag-flagged{%  endif  %}" action="{% url flag-submit %}" method="post" id="{{flag_form.get_id}}">
+<form class="flag-form" action="{% url flag-submit %}" method="post">
 {% csrf_token %}
 {{flag_form}}
 <button {% if not user.is_authenticated %}disabled{%  endif  %} class="btn">Submit</button>
