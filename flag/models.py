@@ -35,6 +35,7 @@ class Flag(models.Model):
   content_type    = models.ForeignKey(ContentType, verbose_name=_('content type'), related_name="content_type_set_for_%(class)s")
   object_pk       = models.CharField(_('object ID'), max_length=200)
   content_object  = generic.GenericForeignKey(ct_field="content_type", fk_field="object_pk")
+  #flag            = models.BooleanField(default=0)
   
   objects = FlagManager()
   
@@ -48,24 +49,18 @@ class Flag(models.Model):
       return content_object_url
     else:
       return '/'
-    
+  
   def save(self, request=None, *args, **kwargs):
     from django.core.exceptions import ValidationError
-    '''
-    Save method overriden if `request` var is supplied.
-    '''
     if request:                                                
       if request.user.is_authenticated():
         self.user = request.user
         
         # Run validate unique again with user
         self.validate_unique()
-
-    if not self.user.is_authenticated():
-      raise ValidationError('Anonymous flags are not allowed')
     
     return super(Flag, self).save(*args, **kwargs)
- 
+
   class Meta:
     unique_together = ("content_type", "object_pk", "user", "ftype")
 

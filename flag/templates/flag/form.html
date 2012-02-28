@@ -1,5 +1,5 @@
 <form class="flag-form {% if flag_form.instance.id %}flag-flagged{%  endif  %}" action="{% url flag-submit %}" method="post" id="{{flag_form.get_id}}">
 {% csrf_token %}
 {{flag_form}}
-<button {% if not user.is_authenticated %}disabled{%  endif  %} class="btn">{% if flag_form.instance.id %}  {{ftype.unflag_label}}  {%  else  %} {{ftype.label}} {%  endif  %}</button>
+<button {% if not user.is_authenticated %}disabled{%  endif  %} class="btn">Submit</button>
 </form>

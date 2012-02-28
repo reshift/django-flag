@@ -70,25 +70,12 @@ class BaseFlagNode(template.Node):
     if len(tokens)==4+shift:
         pass
     
-    elif len(tokens)==6+shift:
-        if tokens[4+shift]=='for':
-            self.FlagType = FlagType.objects.get_type(tokens[5+shift])
-            
-        elif tokens[4+shift]=='as':
-            self.as_varname = tokens[5+shift]
-
-        else:
-            raise template.TemplateSyntaxError("Argument #%d in %r tag must be 'for' (valuation type) or 'as' (variable name)" % (4+shift, tokens[0+shift]))
-
-    elif len(tokens)==8+shift:
-        if not tokens[4]=='for' and tokens[7]=='as':
-            raise template.TemplateSyntaxError("Argument #%d in %r tag must be 'for' (valuation type) or and #%d 'as' (variable name)" %(4+shift, tokens[0], 6+shift))
-        else:
-            self.for_FlagType = tokens[5]
-            self.FlagType = FlagType.objects.get_type(tokens[5])
-            self.as_varname = tokens[7]
-    else:
-        raise template.TemplateSyntaxError("Number of arguments in %r tag can be %d, %d or %d and not %d" %(tokens[0], 3+shift, 5+shift, 7+shift, len(tokens)-1))
+    elif len(tokens)>=6+shift:
+      if tokens[4+shift]=='for':
+        ftypes = tokens[5+shift:len(tokens)]
+        self.ftypes = FlagType.objects.filter(slug__in=ftypes)
+      else:
+        raise template.TemplateSyntaxError("Argument #%d in %r tag must be 'for' (valuation type) or 'as' (variable name)" % (4+shift, tokens[0+shift]))
 
   def get_method(self, method):
     return self.methods.get(method, None)
@@ -109,13 +96,14 @@ class FlagRenderNode(BaseFlagNode):
   '''
   methods = {}
   def form(self, context):
+    from django.forms.formsets import formset_factory
+    from django.forms.models import modelformset_factory, inlineformset_factory
+    from django.utils.functional import curry
     '''
     Renders the valuation form for the object.
     Override template: 'flag/form.html' for modifying the look.
     '''
-    form = FlagForm(context['request'], obj=self.obj.resolve(context), ftype=self.ftype)
-    context['flag_form'] = form
-    context['ftype'] = self.ftype
+    context['flag_form'] = FlagForm(request=context['request'], obj=self.obj.resolve(context), ftypes=self.ftypes)
     
     return render_to_string('flag/form.html', context)
   

@@ -34,6 +34,13 @@ class FlagManager(models.Manager):
   '''
   Flag manager
   '''
+  def create_for_object(self, obj, *args, **kwargs):
+    '''
+    Create a flag instance for object
+    '''
+    content_type, object_pk = ContentType.objects.get_for_model(obj), obj.pk
+    return self.create(content_type=content_type, object_pk=object_pk, *args, **kwargs)
+    
   def filter_for_obj(self, obj, *args, **kwargs):
     '''
     Filter the valuations according to the object.
@@ -41,7 +48,7 @@ class FlagManager(models.Manager):
     ctype, object_pk = ContentType.objects.get_for_model(obj), obj.pk    
     return self.filter(content_type=ctype, object_pk=object_pk, *args, **kwargs)
     
-  def get_by_obj_client(self, request, obj=None, content_type=None, object_pk=None, *args, **kwargs):                    
+  def filter_by_obj_client(self, request, obj=None, content_type=None, object_pk=None, *args, **kwargs):                    
     '''
     The instance of valuation which matches the provided object
     and client (user) info if exists. 
@@ -49,13 +56,7 @@ class FlagManager(models.Manager):
     is_authenticated = request.user.is_authenticated() 
     q_user = Q(user=request.user) if is_authenticated else Q()
     
-    flags_for_obj = self.filter_for_obj(obj, *args, **kwargs)
-    flags_for_obj_by_client = flags_for_obj.filter(q_user)        
-    
-    if flags_for_obj_by_client:
-      return flags_for_obj_by_client[0]
-    else:
-      return None
+    return self.filter_for_obj(obj, *args, **kwargs).filter(q_user) 
     
   def get_count(self, obj, *args, **kwargs):
     '''

@@ -18,22 +18,22 @@ def submit(request):
   '''
   The submissions of flag forms will be handled here.
   '''
+  #print request.POST.getlist('flags')
+  #print request.POST
   form = FlagForm(request)    
   success = False
-  
+
   if form.is_valid():
     # Get ftype for later reference
-    ftype = form.instance.ftype
+    #ftypes = form.instance.ftype
     
-    # Delete if instance is found
-    if form.instance.id:
-      flag = form.instance.delete()
-    else:  
-      flag = form.save()
+    # Delete if flag is not set
+    flag = form.save()
       
     success = True
-    redirect = request.REQUEST.get('next', request.META.get('HTTP_REFERER'))   
+    redirect = request.REQUEST.get('next', request.META.get('HTTP_REFERER'))  
   else:
+    print form.errors
     redirect = '/'
     
   if not request.is_ajax() or request.POST.get('ajax', False):
@@ -47,53 +47,3 @@ def submit(request):
       data['object'] = model_to_dict(flag)
 
     return HttpResponse(simplejson.dumps(data), mimetype='application/javascript')
-
-'''
-DEPRICIATED
-@csrf_protect
-def setFlag(request):
-  delete = False
-  
-  # Get our values
-  if request.method == 'POST':
-    data = request.POST.copy()
-  else:
-    data = request.GET.copy()
-  
-  #if is_valid_access_token(request):
-  #  print "valdiated"
-  #else:
-  #  print "Not valdiated"
-  
-  # Load type
-  ctype = ContentType.objects.get(id=data['content_type'])
-  
-  # Build our filter
-  kwargs = {
-    'content_type': ctype,
-    'object_pk': data['object_pk'],
-    'name': data['name'] 
-  }
-  
-  # Add user to filer
-  if 'glob' not in data:
-    kwargs['user'] = request.user
-  
-  # First check if exists otherwise go on and create
-  try:
-    flag = Flag.objects.get(**kwargs)
-    flag.delete()
-    delete = True
-  except Flag.DoesNotExist:
-    flag = Flag(**kwargs)
-    flag.save()
-    delete = False
-  
-  if(request.is_ajax()):
-    flag = Flag.objects.filter(id=flag.id)
-    data = serializers.serialize("json", flag)
-    return HttpResponse(data, status=200, content_type="text/javascript")
-  else:
-    next = data.get("next", request.META.get('HTTP_REFERER'))
-    return HttpResponseRedirect(next)
-'''    
