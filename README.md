@@ -11,7 +11,7 @@ Flags may be per-user, meaning that each user can mark an item individually, or 
 Installation
 ------------
 - Run 'pip install https://github.com/hub-nl/nl.hub.django.app.flag/tarball/master'
-- Add 'url(r'^submit/$', 'flag.views.submit', name = 'flag-submit'), ' to your urls.py
+- Add flag urls to your urls file: url(r'flag/', include('flag.urls'))
 - Add '{% load flag_tags %}' to the top of your template
 
 Optional:
