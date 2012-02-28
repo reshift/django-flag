@@ -18,7 +18,12 @@ Usage
 -----
 
 Create a flag type from admin site, for example "bookmark"
+Load the template tags: {% load flag %}
 
+Available settings
+------------------
+
+DEFAULT_FLAG_TYPE_ID: The ID of default flag type to be used in the project
 
 Available tags
 --------------
@@ -26,6 +31,9 @@ Available tags
     {% render_flag form of object for flag_type %}
 
 Renders the flag form for the provided object. Override template: 'flag/form.html' for modifying the look.
+It even supports multiple flag types.
+
+    {% render_flag form of object for flag_type flag_type flag_type %}
 
 Author: Sjoerd Arendsen
 HUB online
