@@ -14,11 +14,16 @@ Installation
 - Add 'url(r'^submit/$', 'flag.views.submit', name = 'flag-submit'), ' to your urls.py
 - Add '{% load flag_tags %}' to the top of your template
 
+Optional:
+
+For out of the box AJAX support, include the js/flag.js file:
+
+    <script type="text/javascript" src="{{STATIC_URL}}js/flag.js"></script>
+
 Usage
 -----
 
 Create a flag type from admin site, for example "bookmark"
-Load the template tags: {% load flag %}
 
 Available settings
 ------------------
