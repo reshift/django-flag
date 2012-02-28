@@ -47,7 +47,7 @@ class FlagForm(forms.Form):
   content_type  = forms.ModelChoiceField(queryset=ContentType.objects.all(), widget=forms.HiddenInput)
   object_pk     = forms.CharField(widget=forms.HiddenInput)
   ftypes_dict   = forms.CharField(widget=forms.HiddenInput)
-  ftypes        = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple,required=False)
+  ftypes        = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple,required=False,label="")
 
   def save(self, *args, **kwargs):
     '''
