@@ -32,15 +32,15 @@ def submit(request):
   if not request.is_ajax() or request.POST.get('ajax', False):
     return HttpResponseRedirect(redirect)
   else:
-    '''
     data = {}
+    '''
     data['success'] = str(success)
     data['ftype'] = model_to_dict(ftype)
     
     if flag is not None:
       data['object'] = model_to_dict(flag)
+    '''
     
     return HttpResponse(simplejson.dumps(data), mimetype='application/javascript')
-    '''
-    return HttpResponse(render_to_string('flag/form.html', context_instance=RequestContext(request)))
+    #return HttpResponse(render_to_string('flag/form.html', context_instance=RequestContext(request)))
     

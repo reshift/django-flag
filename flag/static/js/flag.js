@@ -16,7 +16,7 @@
             dataType: 'json',
             data: that.serialize()
             ,success: function(data) {
-              that.replaceWith(data)
+              // Nothing yet
             }
         });
         return false;
