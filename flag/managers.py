@@ -45,7 +45,7 @@ class FlagManager(models.Manager):
     '''
     Filter the valuations according to the object.
     '''
-    ctype, object_pk = ContentType.objects.get_for_model(obj), obj.pk    
+    ctype, object_pk = ContentType.objects.get_for_model(obj), obj.id
     return self.filter(content_type=ctype, object_pk=object_pk, *args, **kwargs)
     
   def filter_by_obj_client(self, request, obj=None, content_type=None, object_pk=None, *args, **kwargs):                    

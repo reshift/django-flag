@@ -12,6 +12,7 @@ register = template.Library()
 class ResultsForObjectNode(template.Node):
   def __init__(self, obj, flagged_label, unflagged_label):
     self.obj = template.Variable(obj)
+    #print "yo"
     self.flagged_label = flagged_label
     self.unflagged_label = unflagged_label
 
@@ -47,7 +48,12 @@ class BaseFlagNode(template.Node):
     '''
     Parses tag arguments and provides attributes for future methods.
     '''
+    #print self.context['obj']
+    #print self.obj
+    
     tokens = token.contents.split()
+    #print tokens[1]
+    #print tokens
     self.ftype = FlagType.objects.get_type()
     self.as_varname = False
     method = self.get_method(tokens[1])
@@ -66,6 +72,7 @@ class BaseFlagNode(template.Node):
         raise template.TemplateSyntaxError("Second argument in %r tag must be 'of'" % tokens[0])
 
     self.obj = parser.compile_filter(tokens[3])
+    #print self.obj
     
     if len(tokens)==4+shift:
         pass
@@ -73,6 +80,18 @@ class BaseFlagNode(template.Node):
     elif len(tokens)>=6+shift:
       if tokens[4+shift]=='for':
         ftypes = tokens[5+shift:len(tokens)]
+        #print ftypes
+        self.ftypes = []
+        for type in ftypes:
+          self.ftypes.append(parser.compile_filter(type))
+          #print template.Variable(type)
+          #print self.obj.resolve(context)
+          #print parser.compile_filter(type)
+          #print type
+          
+        #print ftypes
+        #print ftypes
+        
         self.ftypes = FlagType.objects.filter(slug__in=ftypes)
       else:
         raise template.TemplateSyntaxError("Argument #%d in %r tag must be 'for' (valuation type) or 'as' (variable name)" % (4+shift, tokens[0+shift]))
@@ -81,8 +100,15 @@ class BaseFlagNode(template.Node):
     return self.methods.get(method, None)
   
   def render(self, context):
-    result = self.method(self, context)
+    #print context['obj']
+    '''
+    for type in self.ftypes:
+      print type.resolve(context)
     
+    
+    '''
+    result = self.method(self, context)
+    #print "yo"
     if self.as_varname:
       context[self.as_varname] = result
       return ''
@@ -103,6 +129,7 @@ class FlagRenderNode(BaseFlagNode):
     Renders the valuation form for the object.
     Override template: 'flag/form.html' for modifying the look.
     '''
+    #print self.obj.resolve(context)
     context['flag_form'] = FlagForm(request=context['request'], obj=self.obj.resolve(context), ftypes=self.ftypes)
     
     return render_to_string('flag/form.html', context)
