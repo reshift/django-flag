@@ -57,16 +57,20 @@ def flag(request, action=None, ftype=None):
   # Load type
   ctype = ContentType.objects.get(id=data['content_type'])
   
-  # Build our filter
+  # Get Flag Type
+  ftype = FlagType.objects.get(slug=ftype)
+  
+  # Build our query filter
   kwargs = {
     'content_type': ctype,
     'object_pk': data['object_pk'],
-    'ftype': FlagType.objects.get(slug=ftype),
+    'ftype': ftype,
   }
   
   kwargs['user'] = request.user
   #kwargs['user'] = User.objects.get(id=1) # test
   
+  # Execute, either set a flag or remove it
   if action == "flag":
     try:
       flag = Flag.objects.get_or_create(**kwargs)
@@ -78,10 +82,11 @@ def flag(request, action=None, ftype=None):
     flag = Flag.objects.get(**kwargs)
     flag.delete()
     success = True
-    
+
   if(request.is_ajax()):
-    #flag = Flag.objects.filter(id=flag.id)
-    #data = serializers.serialize("json", flag)
+    data = {}
+    data['success'] = str(success)
+    data['ftype'] = model_to_dict(ftype)
     return HttpResponse(simplejson.dumps(data), content_type="text/javascript")
   else:
     next = data.get("next", request.META.get('HTTP_REFERER'))

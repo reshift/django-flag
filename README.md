@@ -36,7 +36,7 @@ Available tags
     {% render_flag form of object for flag_type %}
 
 Renders a form with flag checkboxes for the provided object. Override template: 'flag/form.html' for modifying the look.
-It even supports multiple flag types.
+It also supports multiple flag types.
 
     {% render_flag form of object for flag_type flag_type flag_type %}
 
@@ -52,6 +52,8 @@ example:
 Or to unflag:
 
     http://127.0.0.1:8000/flag/unflag/wishlist/?content_type=38&object_pk=1
+
+The endpoint supports AJAX request and will return a succes variable in JSON set to True or False. I also passes along the serialized Flag type object.
 
 Author: Sjoerd Arendsen
 HUB online
