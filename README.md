@@ -40,5 +40,18 @@ It even supports multiple flag types.
 
     {% render_flag form of object for flag_type flag_type flag_type %}
 
+Available endpoints
+--------------
+
+You can also create your own form or link and point it to: "<hostname>/flag/[action]/[ftype_slug]/?content_type=[content_type]&object_pk=[object_pk]"
+
+example:
+
+    http://127.0.0.1:8000/flag/flag/wishlist/?content_type=38&object_pk=1
+    
+Or to unflag:
+
+    http://127.0.0.1:8000/flag/unflag/wishlist/?content_type=38&object_pk=1
+
 Author: Sjoerd Arendsen
 HUB online
