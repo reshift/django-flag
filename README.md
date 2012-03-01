@@ -42,7 +42,7 @@ It also supports multiple flag types.
     
 There is also a tag avaibale that returns the endpoint url for a flag
 
-  <a href="{% flag_url of game for wishlist  %}">I want this game for christmas</a>
+    <a href="{% flag_url of game for wishlist  %}">I want this game for christmas</a>
 
 Available endpoints
 --------------
