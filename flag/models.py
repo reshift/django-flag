@@ -49,17 +49,6 @@ class Flag(models.Model):
       return content_object_url
     else:
       return '/'
-  
-  def save(self, request=None, *args, **kwargs):
-    from django.core.exceptions import ValidationError
-    if request:                                                
-      if request.user.is_authenticated():
-        self.user = request.user
-        
-        # Run validate unique again with user
-        self.validate_unique()
-    
-    return super(Flag, self).save(*args, **kwargs)
 
   class Meta:
     unique_together = ("content_type", "object_pk", "user", "ftype")
