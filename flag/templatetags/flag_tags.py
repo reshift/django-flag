@@ -21,7 +21,9 @@ class ResultsForObjectNode(template.Node):
     except template.VariableDoesNotExist:
       return ''
     
-    return reverse('flag-flag', args=['flag', self.ftype])
+    content_type, object_pk = ContentType.objects.get_for_model(obj), obj.pk
+
+    return reverse('flag-flag', args=['flag', self.ftype]) + "?content_type=" + str(content_type.id) + "&object_pk=" + str(object_pk)
 
 @register.tag
 def flag_url(parser, token):

@@ -39,6 +39,10 @@ Renders a form with flag checkboxes for the provided object. Override template: 
 It also supports multiple flag types.
 
     {% render_flag form of object for flag_type flag_type flag_type %}
+    
+There is also a tag avaibale that returns the endpoint url for a flag
+
+  <a href="{% flag_url of game for wishlist  %}">I want this game for christmas</a>
 
 Available endpoints
 --------------
