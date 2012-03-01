@@ -6,15 +6,14 @@ from django.contrib import comments
 from django.utils.encoding import smart_unicode
 from flag.forms import *
 from flag.models import *
+from django.core.urlresolvers import reverse
 
 register = template.Library()
 
 class ResultsForObjectNode(template.Node):
-  def __init__(self, obj, flagged_label, unflagged_label):
+  def __init__(self, obj, ftype):
     self.obj = template.Variable(obj)
-    #print "yo"
-    self.flagged_label = flagged_label
-    self.unflagged_label = unflagged_label
+    self.ftype = ftype
 
   def render(self, context):
     try:
@@ -22,19 +21,16 @@ class ResultsForObjectNode(template.Node):
     except template.VariableDoesNotExist:
       return ''
     
-    form = FlagForm(instance=obj)
-    return render_to_string('flag/form.html', {"form" : form, "flag" : obj, 'flagged_label' : self.flagged_label, 'unflagged_label' : self.unflagged_label}, context_instance=context)
+    return reverse('flag-flag', args=['flag', self.ftype])
 
 @register.tag
-def render_flag_form(parser, token):
+def flag_url(parser, token):
   bits = list(token.split_contents())
-
+  #print bits
   obj = bits[2] # Flag object
-  flagged_label = bits[3].strip('"')
-  unflagged_label = bits[4].strip('"')
+  ftype = bits[4]
 
-  return ResultsForObjectNode(obj, flagged_label, unflagged_label)
-    
+  return ResultsForObjectNode(obj, ftype)
 
 class BaseFlagNode(template.Node):
   methods = {}
@@ -141,6 +137,6 @@ def do_get_flag(parser, token):
 
 def do_render_flag(parser, token):
   return FlagRenderNode(parser, token)
-
+  
 register.tag('get_flag', do_get_flag)
 register.tag('render_flag', do_render_flag)    
