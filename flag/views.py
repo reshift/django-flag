@@ -6,6 +6,7 @@ from django.shortcuts import render_to_response, redirect
 from django.contrib.contenttypes.models import ContentType
 from flag.models import *
 from flag.forms import *
+from django.contrib.auth.models import User
 from django.utils import simplejson
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.http import require_POST
@@ -43,3 +44,45 @@ def submit(request):
     
     return HttpResponse(simplejson.dumps(data), mimetype='application/javascript')
     #return HttpResponse(render_to_string('flag/form.html', context_instance=RequestContext(request)))
+
+def flag(request, action=None, ftype=None):  
+  success = False
+
+  # Get our values
+  if request.method == 'POST':
+    data = request.POST.copy()
+  else:
+    data = request.GET.copy()
+  
+  # Load type
+  ctype = ContentType.objects.get(id=data['content_type'])
+  
+  # Build our filter
+  kwargs = {
+    'content_type': ctype,
+    'object_pk': data['object_pk'],
+    'ftype': FlagType.objects.get(slug=ftype),
+  }
+  
+  kwargs['user'] = request.user
+  #kwargs['user'] = User.objects.get(id=1) # test
+  
+  if action == "flag":
+    try:
+      flag = Flag.objects.get_or_create(**kwargs)
+      success = True 
+    except Flag.DoesNotExist:
+      success = False
+      
+  elif action == "unflag":
+    flag = Flag.objects.get(**kwargs)
+    flag.delete()
+    success = True
+    
+  if(request.is_ajax()):
+    #flag = Flag.objects.filter(id=flag.id)
+    #data = serializers.serialize("json", flag)
+    return HttpResponse(simplejson.dumps(data), content_type="text/javascript")
+  else:
+    next = data.get("next", request.META.get('HTTP_REFERER'))
+    return HttpResponseRedirect(next)
