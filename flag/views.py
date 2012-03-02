@@ -20,9 +20,13 @@ def submit(request):
   '''
   The submissions of flag forms will be handled here.
   '''
-  flag_form = FlagForm(request)    
   success = False
-  print request.POST
+  
+  if 'ftypes_dict' in request.POST :
+    flag_form = FlagMultiForm(request)
+  else:
+    flag_form = FlagForm(request)
+
   if flag_form.is_valid():
     flag = flag_form.save()
     success = True
@@ -79,9 +83,12 @@ def flag(request, action=None, ftype=None):
       success = False
       
   elif action == "unflag":
-    flag = Flag.objects.get(**kwargs)
-    flag.delete()
-    success = True
+    try:
+      flag = Flag.objects.get(**kwargs)
+      flag.delete()
+      success = True
+    except Flag.DoesNotExist:
+      pass
 
   if(request.is_ajax()):
     data = {}

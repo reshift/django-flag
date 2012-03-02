@@ -3,5 +3,5 @@
 <table>
 {{flag_form}}
 </table>
-<button {% if not user.is_authenticated %}disabled{%  endif  %} class="btn">Submit</button>
+<button class="btn">{% if flag_form.instance.id %}  {{flag_form.instance.ftype.unflag_label}}  {%  else  %} {{flag_form.instance.ftype.label}} {%  endif  %}</button>
 </form>
