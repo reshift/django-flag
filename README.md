@@ -40,7 +40,7 @@ Flag URL tgat that returns the endpoint url for a flag
 Tag to reveive tags based on given variables.
 [object] and [user] variables are optional
 
-    {% get_flag flags for flag_type of [object] user [user] as flags %}    
+    {% get_flag flags for flag_type of [object] user [user] as variable %}
 
 Available endpoints
 --------------

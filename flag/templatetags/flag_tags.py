@@ -83,7 +83,7 @@ class ResultsForFlags(template.Node):
 @register.tag
 def get_flag(parser, token):
   '''
-  {% get_flag flags for flag_type of [object] user [user] as flags %}
+  {% get_flag flags for flag_type of [object] user [user] as variable %}
   '''
   
   bits = list(token.split_contents())
