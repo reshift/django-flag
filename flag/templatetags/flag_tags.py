@@ -22,8 +22,14 @@ class ResultsForObjectNode(template.Node):
       return ''
     
     content_type, object_pk = ContentType.objects.get_for_model(obj), obj.pk
+    
+    try:
+      flag = Flag.objects.filter_by_obj_client(request=context['request'], obj=obj)
+      action = "unflag"
+    except Flag.DoesNotExist:
+      action = "flag"  
 
-    return reverse('flag-flag', args=['flag', self.ftype]) + "?content_type=" + str(content_type.id) + "&object_pk=" + str(object_pk)
+    return reverse('flag-flag', args=[action, self.ftype]) + "?content_type=" + str(content_type.id) + "&object_pk=" + str(object_pk)
 
 @register.tag
 def flag_url(parser, token):

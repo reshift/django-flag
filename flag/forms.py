@@ -7,6 +7,10 @@ from django.forms.models import modelformset_factory, BaseModelFormSet
 from django.forms.formsets import BaseFormSet, formset_factory
 from django.utils import simplejson
 
+'''
+class FlagSimpleForm(FlagForm):
+'''   
+
 class FlagForm(forms.Form):
   def __init__(self, request, data=None, initial={}, obj=None, ftypes=None, *args, **kwargs):
     if obj:            
