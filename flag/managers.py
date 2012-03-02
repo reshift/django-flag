@@ -22,7 +22,6 @@ class FlagTypeManager(models.Manager):
     Returns type according to the title if provided or else the default
     type.
     '''
-    #print for_ftype
     if for_ftype:
       ftype=self.get(slug=for_ftype, *args, **kwargs)
     else:
