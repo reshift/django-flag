@@ -11,6 +11,7 @@ setup(
     author='Sjoerd Arendsen',
     author_email='s.arendsen@hub.nl',
     url='https://github.com/hub-nl/nl.hub.django.app.flag/',
-    packages=find_packages(),
+    packages=['flag'],
+    include_package_data=True,
     zip_safe=False,
 )
