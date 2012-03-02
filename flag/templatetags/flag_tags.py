@@ -134,6 +134,7 @@ class FlagRenderNode(BaseFlagNode):
     Override template: 'flag/form.html' for modifying the look.
     '''
     #print self.obj.resolve(context)
+    # Render a multiform or a simpleform based on given flag types
     if(len(self.ftypes) == 1):
       context['flag_form'] = FlagForm(request=context['request'], obj=self.obj.resolve(context), ftype=self.ftypes[0])
       return render_to_string('flag/form.html', context)

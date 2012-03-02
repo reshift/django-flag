@@ -1,0 +1,7 @@
+<form class="flag-multiform" action="{% url flag-submit %}" method="post">
+{% csrf_token %}
+<table>
+{{flag_form}}
+</table>
+<button {% if not user.is_authenticated %}disabled{%  endif  %} class="btn">Submit</button>
+</form>

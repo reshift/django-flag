@@ -8,11 +8,7 @@ from django.forms.formsets import BaseFormSet, formset_factory
 from django.utils import simplejson
 
 class FlagForm(ModelForm):
-  def __init__(self, request, data=None, initial={}, obj=None, instance=None, ftype=None, *args, **kwargs):
-    '''
-    Fills `content_type` and `object_pk` according to object and
-    processes `request` data
-    '''         
+  def __init__(self, request, data=None, initial={}, obj=None, instance=None, ftype=None, *args, **kwargs):      
     self.request = request
     if obj:            
       ctype = ContentType.objects.get_for_model(obj)
@@ -20,7 +16,7 @@ class FlagForm(ModelForm):
       initial['object_pk']    = obj.pk
       initial['ftype']        = ftype
       instance = self.get_instance(request, obj=obj, ftype=ftype)
-    #print ftype    
+   
     if request.POST:                       
       data = request.POST
       instance = self.get_instance_by_post_data(request)
@@ -37,7 +33,6 @@ class FlagForm(ModelForm):
     session). Needs either object or content_type, object_pk as
     arguments as does `get_by_obj_client`
     '''
-    #print ftype
     if ftype.global_flag:
       flag = Flag.objects.filter_for_obj(obj, *args, **kwargs)
       
@@ -70,10 +65,6 @@ class FlagForm(ModelForm):
     Saves the model with the request variable. 
     '''
     
-    #flag = super(FlagForm, self).save(commit=False, *args, **kwargs)
-    #print flag.values()
-    #flag.user = self.request.user
-    #print self.instance
     if self.instance.id:
       self.instance.delete()
     else:

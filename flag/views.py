@@ -22,10 +22,11 @@ def submit(request):
   '''
   success = False
   
-  if 'ftypes_dict' in request.POST :
+  if 'ftypes_dict' in request.POST:
     flag_form = FlagMultiForm(request)
   else:
     flag_form = FlagForm(request)
+    ftype = flag_form.instance.ftype
 
   if flag_form.is_valid():
     flag = flag_form.save()
@@ -38,16 +39,12 @@ def submit(request):
     return HttpResponseRedirect(redirect)
   else:
     data = {}
-    '''
     data['success'] = str(success)
-    data['ftype'] = model_to_dict(ftype)
     
-    if flag is not None:
-      data['object'] = model_to_dict(flag)
-    '''
+    if ftype:
+      data['ftype'] = model_to_dict(ftype)
     
     return HttpResponse(simplejson.dumps(data), mimetype='application/javascript')
-    #return HttpResponse(render_to_string('flag/form.html', context_instance=RequestContext(request)))
 
 def flag(request, action=None, ftype=None):  
   success = False
@@ -72,7 +69,6 @@ def flag(request, action=None, ftype=None):
   }
   
   kwargs['user'] = request.user
-  #kwargs['user'] = User.objects.get(id=1) # test
   
   # Execute, either set a flag or remove it
   if action == "flag":

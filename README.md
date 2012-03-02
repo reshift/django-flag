@@ -14,12 +14,6 @@ Installation
 - Add flag urls to your urls file: url(r'flag/', include('flag.urls'))
 - Add '{% load flag_tags %}' to the top of your template
 
-Optional:
-
-For out of the box AJAX support, include the js/flag.js file:
-
-    <script type="text/javascript" src="{{STATIC_URL}}js/flag.js"></script>
-
 Usage
 -----
 
