@@ -34,11 +34,70 @@ class ResultsForObjectNode(template.Node):
 @register.tag
 def flag_url(parser, token):
   bits = list(token.split_contents())
-  #print bits
   obj = bits[2] # Flag object
   ftype = bits[4]
 
   return ResultsForObjectNode(obj, ftype)
+
+class ResultsForFlags(template.Node):
+  def __init__(self, ftype, obj=None, user=None): 
+    self.obj = obj
+    if obj is not None:
+      self.obj = template.Variable(obj)
+    
+    self.user = user
+    if user is not None:
+      self.user = template.Variable(user)
+        
+    self.ftype = ftype
+
+  def render(self, context):
+    kwargs = {
+      'ftype__slug': self.ftype,
+    }
+    
+    # Get user object
+    if self.user is not None:
+      try:
+        user = self.user.resolve(context)
+        kwargs['user'] = user
+      except template.VariableDoesNotExist:
+        pass
+    else:
+      kwargs['user'] = context['request'].user
+    
+    # Get object
+    if self.obj is not None:
+      try:
+        obj = self.obj.resolve(context)
+        kwargs['content_object'] = obj
+      except template.VariableDoesNotExist:
+        pass
+    
+    flags = Flag.objects.filter(**kwargs)
+
+    context['flags'] = flags
+    return ''
+
+@register.tag
+def get_flag(parser, token):
+  '''
+  {% get_flag flags for flag_type of [object] user [user] %}
+  '''
+  
+  bits = list(token.split_contents())
+  ftype = bits[3] # Flag object
+  obj = None
+  user = None
+
+  for k, v in enumerate(bits):
+    if v == 'of':
+      obj = bits[k+1]
+    
+    if v == 'user' and user is None:
+      user = bits[k+1]
+
+  return ResultsForFlags(ftype, obj, user)
 
 class BaseFlagNode(template.Node):
   methods = {}
@@ -142,15 +201,9 @@ class FlagRenderNode(BaseFlagNode):
       context['flag_form'] = FlagMultiForm(request=context['request'], obj=self.obj.resolve(context), ftypes=self.ftypes)
       return render_to_string('flag/multiform.html', context)
     
-    
-  
   methods['form'] = form
-
-def do_get_flag(parser, token):
-  return FlagGetNode(parser, token)
 
 def do_render_flag(parser, token):
   return FlagRenderNode(parser, token)
   
-register.tag('get_flag', do_get_flag)
 register.tag('render_flag', do_render_flag)    
