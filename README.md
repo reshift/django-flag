@@ -26,17 +26,21 @@ DEFAULT_FLAG_TYPE_ID: The ID of default flag type to be used in the project
 
 Available tags
 --------------
-    
-    {% render_flag form of object for flag_type %}
-
+  
 Renders a form with flag checkboxes for the provided object. Override template: 'flag/form.html' for modifying the look.
 It also supports multiple flag types.
-
+    
+    {% render_flag form of object for flag_type %}
     {% render_flag form of object for flag_type flag_type flag_type %}
     
-There is also a tag avaibale that returns the endpoint url for a flag
+Flag URL tgat that returns the endpoint url for a flag
 
     <a href="{% flag_url of game for wishlist  %}">I want this game for christmas</a>
+
+Tag to reveive tags based on given variables.
+[object] and [user] variables are optional
+
+    {% get_flag flags for flag_type of [object] user [user] as flags %}    
 
 Available endpoints
 --------------

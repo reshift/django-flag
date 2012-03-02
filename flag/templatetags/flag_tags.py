@@ -40,7 +40,7 @@ def flag_url(parser, token):
   return ResultsForObjectNode(obj, ftype)
 
 class ResultsForFlags(template.Node):
-  def __init__(self, ftype, obj=None, user=None): 
+  def __init__(self, ftype, variable, obj=None, user=None): 
     self.obj = obj
     if obj is not None:
       self.obj = template.Variable(obj)
@@ -50,6 +50,7 @@ class ResultsForFlags(template.Node):
       self.user = template.Variable(user)
         
     self.ftype = ftype
+    self.variable = variable
 
   def render(self, context):
     kwargs = {
@@ -76,19 +77,20 @@ class ResultsForFlags(template.Node):
     
     flags = Flag.objects.filter(**kwargs)
 
-    context['flags'] = flags
+    context[self.variable] = flags
     return ''
 
 @register.tag
 def get_flag(parser, token):
   '''
-  {% get_flag flags for flag_type of [object] user [user] %}
+  {% get_flag flags for flag_type of [object] user [user] as flags %}
   '''
   
   bits = list(token.split_contents())
   ftype = bits[3] # Flag object
   obj = None
   user = None
+  variable = "flags"
 
   for k, v in enumerate(bits):
     if v == 'of':
@@ -96,8 +98,11 @@ def get_flag(parser, token):
     
     if v == 'user' and user is None:
       user = bits[k+1]
+    
+    if v == 'as':
+      variable = bits[k+1]  
 
-  return ResultsForFlags(ftype, obj, user)
+  return ResultsForFlags(ftype, variable, obj, user)
 
 class BaseFlagNode(template.Node):
   methods = {}
