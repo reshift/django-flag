@@ -57,5 +57,9 @@ Or to unflag:
 
 The endpoint supports AJAX request and will return a succes variable in JSON set to True or False. I also passes along the serialized Flag type object.
 
+TODO
+
+Base flag submit on django url function? 
+
 Author: Sjoerd Arendsen
 HUB online
