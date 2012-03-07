@@ -59,7 +59,7 @@ The endpoint supports AJAX request and will return a succes variable in JSON set
 
 TODO
 
-- Base flag submit on django url function? 
+- Base flag submit on django url function instead of object arguments? 
 - Prevent link/object spoofing (maybe add a selection to flagtype for wich models it should be active?)
 
 Author: Sjoerd Arendsen
