@@ -116,12 +116,7 @@ class BaseFlagNode(template.Node):
     '''
     Parses tag arguments and provides attributes for future methods.
     '''
-    #print self.context['obj']
-    #print self.obj
-    
     tokens = token.contents.split()
-    #print tokens[1]
-    #print tokens
     self.ftype = FlagType.objects.get_type()
     self.as_varname = False
     method = self.get_method(tokens[1])
@@ -148,17 +143,10 @@ class BaseFlagNode(template.Node):
     elif len(tokens)>=6+shift:
       if tokens[4+shift]=='for':
         ftypes = tokens[5+shift:len(tokens)]
-        #print ftypes
+
         self.ftypes = []
         for type in ftypes:
           self.ftypes.append(parser.compile_filter(type))
-          #print template.Variable(type)
-          #print self.obj.resolve(context)
-          #print parser.compile_filter(type)
-          #print type
-          
-        #print ftypes
-        #print ftypes
         
         self.ftypes = FlagType.objects.filter(slug__in=ftypes)
       else:
@@ -168,7 +156,6 @@ class BaseFlagNode(template.Node):
     return self.methods.get(method, None)
   
   def render(self, context):
-    #print context['obj']
     '''
     for type in self.ftypes:
       print type.resolve(context)
@@ -176,7 +163,7 @@ class BaseFlagNode(template.Node):
     
     '''
     result = self.method(self, context)
-    #print "yo"
+
     if self.as_varname:
       context[self.as_varname] = result
       return ''
@@ -197,8 +184,6 @@ class FlagRenderNode(BaseFlagNode):
     Renders the valuation form for the object.
     Override template: 'flag/form.html' for modifying the look.
     '''
-    #print self.obj.resolve(context)
-    # Render a multiform or a simpleform based on given flag types
     if(len(self.ftypes) == 1):
       context['flag_form'] = FlagForm(request=context['request'], obj=self.obj.resolve(context), ftype=self.ftypes[0])
       return render_to_string('flag/form.html', context)
