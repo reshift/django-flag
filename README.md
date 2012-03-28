@@ -10,7 +10,7 @@ Flags may be per-user, meaning that each user can mark an item individually, or 
 
 Installation
 ------------
-- Run 'pip install https://github.com/hub-nl/nl.hub.django.app.flag/tarball/master'
+- Run 'pip install https://github.com/hub-nl/django-flag/tarball/master'
 - Add flag urls to your urls file: url(r'flag/', include('flag.urls'))
 - Add '{% load flag_tags %}' to the top of your template
 
