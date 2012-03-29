@@ -118,7 +118,7 @@ class BaseFlagNode(template.Node):
     '''
     #try:
     request = template.Variable('request')
-    print request
+    print request.user
     #if not request.user.is_authenticated():
     #raise template.TemplateSyntaxError("User is not authenticated")
     
