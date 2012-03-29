@@ -135,7 +135,6 @@ class BaseFlagNode(template.Node):
         raise template.TemplateSyntaxError("Second argument in %r tag must be 'of'" % tokens[0])
 
     self.obj = parser.compile_filter(tokens[3])
-    #print self.obj
     
     if len(tokens)==4+shift:
         pass
@@ -156,12 +155,6 @@ class BaseFlagNode(template.Node):
     return self.methods.get(method, None)
   
   def render(self, context):
-    '''
-    for type in self.ftypes:
-      print type.resolve(context)
-    
-    
-    '''
     result = self.method(self, context)
 
     if self.as_varname:
