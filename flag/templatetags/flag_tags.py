@@ -116,9 +116,12 @@ class BaseFlagNode(template.Node):
     '''
     Parses tag arguments and provides attributes for future methods.
     '''
+    #try:
     request = template.Variable('request')
-    if not request.user.is_authenticated():
-      raise template.TemplateSyntaxError("User is not authenticated")
+    print request
+    #if not request.user.is_authenticated():
+    #raise template.TemplateSyntaxError("User is not authenticated")
+    
     
     tokens = token.contents.split()
     self.ftype = FlagType.objects.get_type()
