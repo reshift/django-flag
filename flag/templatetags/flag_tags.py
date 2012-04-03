@@ -71,7 +71,9 @@ class ResultsForFlags(template.Node):
     if self.obj is not None:
       try:
         obj = self.obj.resolve(context)
-        kwargs['content_object'] = obj
+        bookmark_type = ContentType.objects.get_for_model(obj)
+        kwargs['content_type__pk'] = bookmark_type.id
+        kwargs['object_id'] = obj.id
       except template.VariableDoesNotExist:
         pass
     
