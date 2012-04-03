@@ -73,7 +73,7 @@ class ResultsForFlags(template.Node):
         obj = self.obj.resolve(context)
         bookmark_type = ContentType.objects.get_for_model(obj)
         kwargs['content_type__pk'] = bookmark_type.id
-        kwargs['object_id'] = obj.id
+        kwargs['object_pk'] = obj.id
       except template.VariableDoesNotExist:
         pass
     
