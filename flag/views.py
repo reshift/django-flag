@@ -1,6 +1,6 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import get_object_or_404
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden
 from django.template import RequestContext
 from django.shortcuts import render_to_response, redirect
 from django.contrib.contenttypes.models import ContentType
@@ -54,6 +54,11 @@ def flag(request, action=None, ftype=None):
     data = request.POST.copy()
   else:
     data = request.GET.copy()
+    
+  # Security check
+  token = md5.new(settings.SECRET_KEY + str(data['content_type']) + str(data['object_pk'])).hexdigest()
+  if token != data['token']:
+    return HttpResponseForbidden()
   
   # Load type
   ctype = ContentType.objects.get(id=data['content_type'])
