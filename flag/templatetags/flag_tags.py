@@ -188,9 +188,29 @@ class FlagRenderNode(BaseFlagNode):
     Renders the valuation form for the object.
     Override template: 'flag/form.html' for modifying the look.
     '''
+    def render(self, context):
+        ctype, object_pk = self.get_target_ctype_pk(context)
+        if object_pk:
+            template_search_list = [
+                "comments/%s/%s/form.html" % (ctype.app_label, ctype.model),
+                "comments/%s/form.html" % ctype.app_label,
+                "comments/form.html"
+            ]
+            context.push()
+            formstr = render_to_string(template_search_list, {"form" : self.get_form(context)}, context)
+            context.pop()
+            return formstr
+        else:
+            return ''
+    
     if(len(self.ftypes) == 1):
       context['flag_form'] = FlagForm(request=context['request'], obj=self.obj.resolve(context), ftype=self.ftypes[0])
-      return render_to_string('flag/form.html', context)
+      #return render_to_string('flag/form.html', context)
+      template_search_list = [
+        "flag/%s/form.html" % self.ftypes[0],
+        "flag/form.html"
+      ]
+      return render_to_string(template_search_list, context)
     else:
       context['flag_form'] = FlagMultiForm(request=context['request'], obj=self.obj.resolve(context), ftypes=self.ftypes)
       return render_to_string('flag/multiform.html', context)
