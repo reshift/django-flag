@@ -7,6 +7,7 @@ from django.utils.encoding import smart_unicode
 from flag.forms import *
 from flag.models import *
 from django.core.urlresolvers import reverse
+import md5
 
 register = template.Library()
 
@@ -27,9 +28,11 @@ class ResultsForObjectNode(template.Node):
       flag = Flag.objects.filter_by_obj_client(request=context['request'], obj=obj)
       action = "unflag"
     except Flag.DoesNotExist:
-      action = "flag"  
-
-    return reverse('flag-flag', args=[action, self.ftype]) + "?content_type=" + str(content_type.id) + "&object_pk=" + str(object_pk)
+      action = "flag"
+    
+    #token = md5.new(settings.SECRET_KEY + self.ftype + content_type.id + object_pk).hexdigest()
+    token = md5.new(settings.SECRET_KEY + content_type.id + object_pk).hexdigest()
+    return reverse('flag-flag', args=[action, self.ftype]) + "?content_type=" + str(content_type.id) + "&object_pk=" + str(object_pk) + "&token=" + str(token)
 
 @register.tag
 def flag_url(parser, token):
