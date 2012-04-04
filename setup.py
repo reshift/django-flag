@@ -10,7 +10,7 @@ setup(
   long_description=long_description,
   author='Sjoerd Arendsen',
   author_email='s.arendsen@hub.nl',
-  url='https://github.com/hub-nl/nl.hub.django.app.flag/',
+  url='https://github.com/hub-nl/django-flag/',
   packages=(
     'flag',
     'flag.templatetags',
