@@ -31,7 +31,7 @@ class ResultsForObjectNode(template.Node):
       action = "flag"
     
     #token = md5.new(settings.SECRET_KEY + self.ftype + content_type.id + object_pk).hexdigest()
-    token = md5.new(settings.SECRET_KEY + content_type.id + object_pk).hexdigest()
+    token = md5.new(settings.SECRET_KEY + str(content_type.id) + str(object_pk)).hexdigest()
     return reverse('flag-flag', args=[action, self.ftype]) + "?content_type=" + str(content_type.id) + "&object_pk=" + str(object_pk) + "&token=" + str(token)
 
 @register.tag
