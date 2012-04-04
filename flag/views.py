@@ -13,6 +13,7 @@ from django.views.decorators.http import require_POST
 from django.forms.models import model_to_dict
 from django.template.loader import render_to_string
 from django.views.generic import ListView
+import md5
 
 @csrf_protect
 @require_POST
