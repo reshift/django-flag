@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 long_description = open('README.md').read()
  
 setup(
-  name='django-hub-flag',
+  name='django-flag',
   version='0.2.3',
   description='Flags for django',
   long_description=long_description,
