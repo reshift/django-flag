@@ -53,6 +53,9 @@ class ResultsForFlags(template.Node):
     self.variable = variable
 
   def render(self, context):
+    if not context['request'].user.is_authenticated():
+      return ""
+    
     kwargs = {
       'ftype__slug': self.ftype,
     }
