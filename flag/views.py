@@ -10,6 +10,7 @@ from django.contrib.auth.models import User
 from django.utils import simplejson
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.http import require_POST
+from django.contrib.auth.decorators import login_required
 from django.forms.models import model_to_dict
 from django.template.loader import render_to_string
 from django.views.generic import ListView
@@ -17,6 +18,7 @@ import md5
 
 @csrf_protect
 @require_POST
+@login_required
 def submit(request):
   '''
   The submissions of flag forms will be handled here.
@@ -47,6 +49,7 @@ def submit(request):
     
     return HttpResponse(simplejson.dumps(data), mimetype='application/javascript')
 
+@login_required
 def flag(request, action=None, ftype=None):  
   success = False
 
