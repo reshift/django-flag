@@ -163,8 +163,8 @@ class BaseFlagNode(template.Node):
     return self.methods.get(method, None)
   
   def render(self, context):
-    if not context['request'].user.is_authenticated():
-      return ""
+    #if not context['request'].user.is_authenticated():
+      #return ""
     
     result = self.method(self, context)
 

@@ -53,7 +53,10 @@ class FlagManager(models.Manager):
     and client (user) info if exists. 
     '''
     is_authenticated = request.user.is_authenticated() 
-    q_user = Q(user=request.user) if is_authenticated else Q()
+    if is_authenticated:
+      q_user = Q(user=request.user) 
+    else:
+      return self.none()
     
     return self.filter_for_obj(obj, *args, **kwargs).filter(q_user) 
     

@@ -33,20 +33,30 @@ class FlagForm(ModelForm):
     session). Needs either object or content_type, object_pk as
     arguments as does `get_by_obj_client`
     '''
+    
     if ftype.global_flag:
       flag = Flag.objects.filter_for_obj(obj, *args, **kwargs)
       
       if flag:
         instance = flag[0]
       else:
-        instance = Flag(ftype=ftype, user=request.user, *args, **kwargs) 
+        instance = Flag(ftype=ftype, *args, **kwargs) 
         
     else:
+      #instance = Flag.objects.filter_by_obj_client(request=request, obj=obj, ftype=ftype, *args, **kwargs)
+      
+      #if instance is None:
+        #instance = Flag(ftype=ftype, *args, **kwargs)
+      instance = Flag(ftype=ftype, *args, **kwargs)
       try:
         instance = Flag.objects.filter_by_obj_client(request=request, obj=obj, ftype=ftype, *args, **kwargs).get()
       except Flag.DoesNotExist:
-        instance = Flag(ftype=ftype, user=request.user, *args, **kwargs)
-        
+        pass
+    
+    #print instance.ftype
+    if request.user.is_authenticated(): 
+      instance.user = request.user
+
     return instance
 
   def get_instance_by_post_data(self, request, *args, **kwargs):
