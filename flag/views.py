@@ -50,22 +50,22 @@ def submit(request):
     return HttpResponse(simplejson.dumps(data), mimetype='application/javascript')
 
 @login_required
-def flag(request, action=None, ftype=None):  
+def flag(request, ftype, ct, pk, token, action=None):
   success = False
 
-  # Get our values
   if request.method == 'POST':
     data = request.POST.copy()
   else:
     data = request.GET.copy()
     
   # Security check
-  token = md5.new(settings.SECRET_KEY + str(data['content_type']) + str(data['object_pk'])).hexdigest()
-  if token != data['token']:
+  token_check = md5.new(settings.SECRET_KEY + str(ct) + str(pk)).hexdigest()
+
+  if token_check != token:
     return HttpResponseForbidden()
   
   # Load type
-  ctype = ContentType.objects.get(id=data['content_type'])
+  ctype = ContentType.objects.get(id=ct)
   
   # Get Flag Type
   ftype = FlagType.objects.get(slug=ftype)
@@ -73,13 +73,14 @@ def flag(request, action=None, ftype=None):
   # Build our query filter
   kwargs = {
     'content_type': ctype,
-    'object_pk': data['object_pk'],
+    'object_pk': pk,
     'ftype': ftype,
   }
   
   kwargs['user'] = request.user
   
   # Execute, either set a flag or remove it
+  #print action
   if action == "flag":
     try:
       flag = Flag.objects.get_or_create(**kwargs)

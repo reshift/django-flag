@@ -11,6 +11,77 @@ import md5
 
 register = template.Library()
 
+@register.simple_tag(takes_context=True)
+def is_flagged(context, obj, ftype):
+  """
+  Returns whether or not the user has flagged the given object
+  """
+  flag = Flag.objects.filter_by_obj_user(user=context['request'].user, obj=obj, ftype__slug=ftype)
+  return len(flag) == 1
+
+@register.simple_tag(takes_context=True)
+def flag_url(context, obj, ftype):
+  """
+  Generates a link to "rate" the given object with the provided score - this
+  can be used as a form target or for POSTing via Ajax.
+  """
+  return reverse('flag_flag', args=(
+    ftype,
+    ContentType.objects.get_for_model(obj).pk,
+    obj.pk,
+    flag_generate_token(obj=obj, user=context['request'].user)
+  ))
+
+@register.simple_tag(takes_context=True)
+def unflag_url(context, obj, ftype):
+  """
+  Generates a link to "rate" the given object with the provided score - this
+  can be used as a form target or for POSTing via Ajax.
+  """
+
+  return reverse('flag_unflag', args=(
+    ftype,
+    ContentType.objects.get_for_model(obj).pk,
+    obj.pk,
+    flag_generate_token(obj=obj, user=context['request'].user)
+  ))
+
+@register.assignment_tag
+def get_flag_label(ftype, obj=None, user=None):
+  ftype = FlagType.objects.filter(slug=ftype)[0]
+  flag = Flag.objects.filter_by_obj_user(user=user, obj=obj, ftype=ftype)
+  #print flag
+  if len(flag) == 0:
+    label = ftype.label
+  else:
+    label = ftype.unflag_label
+
+  return label
+
+'''
+@register.assignment_tag
+def get_flag_type(ftype):
+  try:
+    ftype = FlagType.objects.filter(slug=ftype)
+    #flag = Flag.objects.filter_by_obj_client(request=context['request'], obj=obj)
+  except Flag.DoesNotExist:
+    ftype = None
+
+  return ftype
+
+
+@register.simple_tag(takes_context=True)
+def get_flag(context, obj):
+  content_type, object_pk = ContentType.objects.get_for_model(obj), obj.pk
+
+  try:
+    flag = Flag.objects.filter_by_obj_client(request=context['request'], obj=obj)
+  except Flag.DoesNotExist:
+    flag = None
+
+  return flag
+'''
+'''
 class ResultsForObjectNode(template.Node):
   def __init__(self, obj, ftype):
     self.obj = template.Variable(obj)
@@ -23,16 +94,16 @@ class ResultsForObjectNode(template.Node):
       return ''
     
     content_type, object_pk = ContentType.objects.get_for_model(obj), obj.pk
-    
-    try:
-      flag = Flag.objects.filter_by_obj_client(request=context['request'], obj=obj)
-      action = "unflag"
-    except Flag.DoesNotExist:
+    flag = Flag.objects.filter_by_obj_client(request=context['request'], obj=obj, ftype__slug=self.ftype)
+
+    if len(flag) == 0:
       action = "flag"
-    
-    #token = md5.new(settings.SECRET_KEY + self.ftype + content_type.id + object_pk).hexdigest()
+    else:
+      action = "unflag"
+
     token = md5.new(settings.SECRET_KEY + str(content_type.id) + str(object_pk)).hexdigest()
     return reverse('flag-flag', args=[action, self.ftype]) + "?content_type=" + str(content_type.id) + "&object_pk=" + str(object_pk) + "&token=" + str(token)
+
 
 @register.tag
 def flag_url(parser, token):
@@ -41,7 +112,7 @@ def flag_url(parser, token):
   ftype = bits[4]
 
   return ResultsForObjectNode(obj, ftype)
-
+'''
 class ResultsForFlags(template.Node):
   def __init__(self, ftype, variable, obj=None, user=None): 
     self.obj = obj

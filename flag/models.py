@@ -5,6 +5,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
+import md5
 
 class FlagType(models.Model):
   '''
@@ -38,6 +39,12 @@ class Flag(models.Model):
   #flag            = models.BooleanField(default=0)
   
   objects = FlagManager()
+
+  def get_label(self):
+    if self.pk:
+      return self.ftype.unflag_label
+    else:
+      return self.ftype.label
   
   def get_absolute_url(self):
     try:
@@ -52,6 +59,11 @@ class Flag(models.Model):
 
   class Meta:
     unique_together = ("content_type", "object_pk", "user", "ftype")
+
+def flag_generate_token(obj, user):
+  content_type, object_pk = ContentType.objects.get_for_model(obj), obj.pk
+  token = md5.new(settings.SECRET_KEY + str(content_type.id) + str(object_pk)).hexdigest()
+  return token
 
 '''
 class FlagCounts(models.Model):
