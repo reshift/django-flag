@@ -5,7 +5,6 @@ from django.template import RequestContext
 from django.shortcuts import render_to_response, redirect
 from django.contrib.contenttypes.models import ContentType
 from flag.models import *
-from flag.forms import *
 from django.contrib.auth.models import User
 from django.utils import simplejson
 from django.views.decorators.csrf import csrf_protect
