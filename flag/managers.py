@@ -60,18 +60,8 @@ class FlagManager(models.Manager):
     
     return self.filter_for_obj(obj, *args, **kwargs).filter(q_user) 
 
-  def filter_by_obj_user(self, user, obj=None, content_type=None, object_pk=None, *args, **kwargs):                    
-    '''
-    The instance of valuation which matches the provided object
-    and user info if exists. 
-    '''
-    is_authenticated = user.is_authenticated() 
-    if is_authenticated:
-      q_user = Q(user=user) 
-    else:
-      return self.none()
-    
-    return self.filter_for_obj(obj, *args, **kwargs).filter(q_user) 
+  def filter_by_obj_user(self, user, obj=None, *args, **kwargs):                        
+    return self.filter_for_obj(obj, *args, **kwargs).filter(user=user)
     
   def get_count(self, obj, *args, **kwargs):
     '''

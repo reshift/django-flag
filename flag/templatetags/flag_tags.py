@@ -11,6 +11,43 @@ import md5
 
 register = template.Library()
 
+@register.assignment_tag
+def flag(ftype, *args, **kwargs):
+  '''
+    {% flag type user=user obj=obj as flag %}
+  '''
+  user = kwargs.get('user', None)
+  obj = kwargs['obj']
+
+  ftype = FlagType.objects.filter(slug=ftype)[0]
+  ftype.unflag_url = generate_unflag_url(user=user, obj=obj, ftype=ftype)
+  ftype.flag_url = generate_flag_url(user=user, obj=obj, ftype=ftype)
+  #flag = ftype.flags.filter_by_obj_user(obj=obj, user=user)[0]
+  # Check if flag is set
+  #flag = Flag.objects.filter_by_obj_user(user=user, obj=obj, ftype=ftype)
+  try:
+    flag = ftype.flags.filter_by_obj_user(obj=obj, user=user)[0]
+    ftype.set = True
+  except:
+    ftype.set = True
+
+  return ftype
+
+@register.assignment_tag
+def get_flags(ftype, *args, **kwargs):
+  '''
+    {% get_flags type user=user as flags %}
+  '''
+  user = kwargs.get('user', None)
+  #obj = kwargs.get('obj', None)
+
+  ftype = FlagType.objects.filter(slug=ftype)[0]
+
+  if user:
+    flags = Flag.objects.filter(user=user, ftype=ftype)
+
+  return flags
+
 @register.simple_tag(takes_context=True)
 def is_flagged(context, obj, ftype):
   """
@@ -21,258 +58,9 @@ def is_flagged(context, obj, ftype):
 
 @register.simple_tag(takes_context=True)
 def flag_url(context, obj, ftype):
-  """
-  Generates a link to "rate" the given object with the provided score - this
-  can be used as a form target or for POSTing via Ajax.
-  """
-  return reverse('flag_flag', args=(
-    ftype,
-    ContentType.objects.get_for_model(obj).pk,
-    obj.pk,
-    flag_generate_token(obj=obj, user=context['request'].user)
-  ))
+  return generate_unflag_url(ftype=ftype, user=context['request'].user, obj=obj)
 
 @register.simple_tag(takes_context=True)
 def unflag_url(context, obj, ftype):
-  """
-  Generates a link to "rate" the given object with the provided score - this
-  can be used as a form target or for POSTing via Ajax.
-  """
+  return generate_flag_url(ftype=ftype, user=context['request'].user, obj=obj)
 
-  return reverse('flag_unflag', args=(
-    ftype,
-    ContentType.objects.get_for_model(obj).pk,
-    obj.pk,
-    flag_generate_token(obj=obj, user=context['request'].user)
-  ))
-
-@register.assignment_tag
-def get_flag_label(ftype, obj=None, user=None):
-  ftype = FlagType.objects.filter(slug=ftype)[0]
-  flag = Flag.objects.filter_by_obj_user(user=user, obj=obj, ftype=ftype)
-  #print flag
-  if len(flag) == 0:
-    label = ftype.label
-  else:
-    label = ftype.unflag_label
-
-  return label
-
-'''
-@register.assignment_tag
-def get_flag_type(ftype):
-  try:
-    ftype = FlagType.objects.filter(slug=ftype)
-    #flag = Flag.objects.filter_by_obj_client(request=context['request'], obj=obj)
-  except Flag.DoesNotExist:
-    ftype = None
-
-  return ftype
-
-
-@register.simple_tag(takes_context=True)
-def get_flag(context, obj):
-  content_type, object_pk = ContentType.objects.get_for_model(obj), obj.pk
-
-  try:
-    flag = Flag.objects.filter_by_obj_client(request=context['request'], obj=obj)
-  except Flag.DoesNotExist:
-    flag = None
-
-  return flag
-'''
-'''
-class ResultsForObjectNode(template.Node):
-  def __init__(self, obj, ftype):
-    self.obj = template.Variable(obj)
-    self.ftype = ftype
-
-  def render(self, context):
-    try:
-      obj = self.obj.resolve(context)
-    except template.VariableDoesNotExist:
-      return ''
-    
-    content_type, object_pk = ContentType.objects.get_for_model(obj), obj.pk
-    flag = Flag.objects.filter_by_obj_client(request=context['request'], obj=obj, ftype__slug=self.ftype)
-
-    if len(flag) == 0:
-      action = "flag"
-    else:
-      action = "unflag"
-
-    token = md5.new(settings.SECRET_KEY + str(content_type.id) + str(object_pk)).hexdigest()
-    return reverse('flag-flag', args=[action, self.ftype]) + "?content_type=" + str(content_type.id) + "&object_pk=" + str(object_pk) + "&token=" + str(token)
-
-
-@register.tag
-def flag_url(parser, token):
-  bits = list(token.split_contents())
-  obj = bits[2] # Flag object
-  ftype = bits[4]
-
-  return ResultsForObjectNode(obj, ftype)
-'''
-class ResultsForFlags(template.Node):
-  def __init__(self, ftype, variable, obj=None, user=None): 
-    self.obj = obj
-    if obj is not None:
-      self.obj = template.Variable(obj)
-    
-    self.user = user
-    if user is not None:
-      self.user = template.Variable(user)
-        
-    self.ftype = ftype
-    self.variable = variable
-
-  def render(self, context):
-    if not context['request'].user.is_authenticated():
-      return ""
-    
-    kwargs = {
-      'ftype__slug': self.ftype,
-    }
-    
-    # Get user object
-    if self.user is not None:
-      try:
-        user = self.user.resolve(context)
-        kwargs['user'] = user
-      except template.VariableDoesNotExist:
-        pass
-    else:
-      kwargs['user'] = context['request'].user
-    
-    # Get object
-    if self.obj is not None:
-      try:
-        obj = self.obj.resolve(context)
-        bookmark_type = ContentType.objects.get_for_model(obj)
-        kwargs['content_type__pk'] = bookmark_type.id
-        kwargs['object_pk'] = obj.id
-      except template.VariableDoesNotExist:
-        pass
-    
-    flags = Flag.objects.filter(**kwargs)
-
-    context[self.variable] = flags
-    return ''
-
-@register.tag
-def get_flag(parser, token):
-  '''
-  {% get_flag flags for flag_type of [object] user [user] as variable %}
-  '''
-  
-  bits = list(token.split_contents())
-  ftype = bits[3] # Flag object
-  obj = None
-  user = None
-  variable = "flags"
-
-  for k, v in enumerate(bits):
-    if v == 'of':
-      obj = bits[k+1]
-    
-    if v == 'user' and user is None:
-      user = bits[k+1]
-    
-    if v == 'as':
-      variable = bits[k+1]  
-
-  return ResultsForFlags(ftype, variable, obj, user)
-
-class BaseFlagNode(template.Node):
-  methods = {}
-  '''
-  This is the base node for flag app. Inherited by get and render
-  template tags. The tags can use the default flag type (pk=1 or
-  DEFAULT_FLAG_TYPE_PK setting. The valuation type if required can
-  be specified by `for flag_type` as arguments in the tag. 
-  '''
-  def __init__(self, parser, token, shift=0):
-    '''
-    Parses tag arguments and provides attributes for future methods.
-    '''
-    tokens = token.contents.split()
-    self.ftype = FlagType.objects.get_type()
-    self.as_varname = False
-    method = self.get_method(tokens[1])
-    if not method:
-        raise template.TemplateSyntaxError("%r is not a valid method in %r tag" %(tokens[1], tokens[0]))
-    else:
-        self.method = method
-        if tokens[1]=='choice_count':                
-            if len(tokens) < 5 or not tokens[4]=='for_choice':                    
-                raise template.TemplateSyntaxError("Fourth argument in %r tag must be 'for_choice'" % tokens[0])
-            else:
-                self.choice=tokens[5]
-            shift+=2
-    
-    if not tokens[2]=='of':
-        raise template.TemplateSyntaxError("Second argument in %r tag must be 'of'" % tokens[0])
-
-    self.obj = parser.compile_filter(tokens[3])
-    
-    if len(tokens)==4+shift:
-        pass
-    
-    elif len(tokens)>=6+shift:
-      if tokens[4+shift]=='for':
-        ftypes = tokens[5+shift:len(tokens)]
-
-        self.ftypes = []
-        for type in ftypes:
-          self.ftypes.append(parser.compile_filter(type))
-        
-        self.ftypes = FlagType.objects.filter(slug__in=ftypes)
-      else:
-        raise template.TemplateSyntaxError("Argument #%d in %r tag must be 'for' (valuation type) or 'as' (variable name)" % (4+shift, tokens[0+shift]))
-
-  def get_method(self, method):
-    return self.methods.get(method, None)
-  
-  def render(self, context):
-    #if not context['request'].user.is_authenticated():
-      #return ""
-    
-    result = self.method(self, context)
-
-    if self.as_varname:
-      context[self.as_varname] = result
-      return ''
-    else:
-      return result
-
-class FlagRenderNode(BaseFlagNode):
-  '''
-  This nodes render directly through an html template. Templates can be
-  overridden at templates/flag/*.html    
-  '''
-  methods = {}
-  def form(self, context):
-    from django.forms.formsets import formset_factory
-    from django.forms.models import modelformset_factory, inlineformset_factory
-    from django.utils.functional import curry
-    '''
-    Renders the valuation form for the object.
-    Override template: 'flag/form.html' for modifying the look.
-    '''
-    if(len(self.ftypes) == 1):
-      context['flag_form'] = FlagForm(request=context['request'], obj=self.obj.resolve(context), ftype=self.ftypes[0])
-      template_search_list = [
-        "flag/%s/form.html" % self.ftypes[0],
-        "flag/form.html"
-      ]
-      return render_to_string(template_search_list, context)
-    else:
-      context['flag_form'] = FlagMultiForm(request=context['request'], obj=self.obj.resolve(context), ftypes=self.ftypes)
-      return render_to_string('flag/multiform.html', context)
-    
-  methods['form'] = form
-
-def do_render_flag(parser, token):
-  return FlagRenderNode(parser, token)
-  
-register.tag('render_flag', do_render_flag)    

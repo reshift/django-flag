@@ -30,7 +30,7 @@ class Flag(models.Model):
   '''
   The flag model.
   ''' 
-  ftype           = models.ForeignKey(FlagType, verbose_name=_('type'))
+  ftype           = models.ForeignKey(FlagType, verbose_name=_('type'), related_name='flags')
   user            = models.ForeignKey(User, verbose_name=_('user'))
   timestamp       = models.DateTimeField(auto_now=True)
   content_type    = models.ForeignKey(ContentType, verbose_name=_('content type'), related_name="content_type_set_for_%(class)s")
@@ -59,6 +59,22 @@ class Flag(models.Model):
 
   class Meta:
     unique_together = ("content_type", "object_pk", "user", "ftype")
+
+def generate_unflag_url(ftype, user, obj):
+  return reverse('flag_unflag', args=(
+    ftype,
+    ContentType.objects.get_for_model(obj).pk,
+    obj.pk,
+    flag_generate_token(obj=obj, user=user)
+  ))
+
+def generate_flag_url(ftype, user, obj):
+  return reverse('flag_flag', args=(
+    ftype,
+    ContentType.objects.get_for_model(obj).pk,
+    obj.pk,
+    flag_generate_token(obj=obj, user=user)
+  ))
 
 def flag_generate_token(obj, user):
   content_type, object_pk = ContentType.objects.get_for_model(obj), obj.pk

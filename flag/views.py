@@ -16,39 +16,6 @@ from django.template.loader import render_to_string
 from django.views.generic import ListView
 import md5
 
-@csrf_protect
-@require_POST
-@login_required
-def submit(request):
-  '''
-  The submissions of flag forms will be handled here.
-  '''
-  success = False
-  
-  if 'ftypes_dict' in request.POST:
-    flag_form = FlagMultiForm(request)
-  else:
-    flag_form = FlagForm(request)
-    ftype = flag_form.instance.ftype
-
-  if flag_form.is_valid():
-    flag = flag_form.save()
-    success = True
-    redirect = request.REQUEST.get('next', request.META.get('HTTP_REFERER'))  
-  else:
-    redirect = '/'
-    
-  if not request.is_ajax() or request.POST.get('ajax', False):
-    return HttpResponseRedirect(redirect)
-  else:
-    data = {}
-    data['success'] = str(success)
-    
-    if ftype:
-      data['ftype'] = model_to_dict(ftype)
-    
-    return HttpResponse(simplejson.dumps(data), mimetype='application/javascript')
-
 @login_required
 def flag(request, ftype, ct, pk, token, action=None):
   success = False
