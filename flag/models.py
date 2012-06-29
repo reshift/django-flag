@@ -5,7 +5,6 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
-import md5
 
 class FlagType(models.Model):
   '''
@@ -59,27 +58,6 @@ class Flag(models.Model):
 
   class Meta:
     unique_together = ("content_type", "object_pk", "user", "ftype")
-
-def generate_unflag_url(ftype, user, obj):
-  return reverse('flag_unflag', args=(
-    ftype,
-    ContentType.objects.get_for_model(obj).pk,
-    obj.pk,
-    flag_generate_token(obj=obj, user=user)
-  ))
-
-def generate_flag_url(ftype, user, obj):
-  return reverse('flag_flag', args=(
-    ftype,
-    ContentType.objects.get_for_model(obj).pk,
-    obj.pk,
-    flag_generate_token(obj=obj, user=user)
-  ))
-
-def flag_generate_token(obj, user):
-  content_type, object_pk = ContentType.objects.get_for_model(obj), obj.pk
-  token = md5.new(settings.SECRET_KEY + str(content_type.id) + str(object_pk)).hexdigest()
-  return token
 
 '''
 class FlagCounts(models.Model):

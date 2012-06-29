@@ -46,7 +46,6 @@ def flag(request, ftype, ct, pk, token, action=None):
   kwargs['user'] = request.user
   
   # Execute, either set a flag or remove it
-  #print action
   if action == "flag":
     try:
       flag = Flag.objects.get_or_create(**kwargs)
@@ -61,7 +60,7 @@ def flag(request, ftype, ct, pk, token, action=None):
       success = True
     except Flag.DoesNotExist:
       pass
-
+ 
   if(request.is_ajax()):
     data = {}
     data['success'] = str(success)

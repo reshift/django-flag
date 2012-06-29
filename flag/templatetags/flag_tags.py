@@ -5,6 +5,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib import comments
 from django.utils.encoding import smart_unicode
 from flag.models import *
+from flag.utils import *
 from django.core.urlresolvers import reverse
 import md5
 
@@ -13,24 +14,44 @@ register = template.Library()
 @register.assignment_tag
 def flag(ftype, *args, **kwargs):
   '''
-    {% flag type user=user obj=obj as flag %}
+  Returns a object with info the the flagtype and if its set for the provided user
+  {% flag type user=user obj=obj as flag %}
   '''
   user = kwargs.get('user', None)
   obj = kwargs['obj']
 
   ftype = FlagType.objects.filter(slug=ftype)[0]
-  ftype.unflag_url = generate_unflag_url(user=user, obj=obj, ftype=ftype)
-  ftype.flag_url = generate_flag_url(user=user, obj=obj, ftype=ftype)
-  #flag = ftype.flags.filter_by_obj_user(obj=obj, user=user)[0]
-  # Check if flag is set
-  #flag = Flag.objects.filter_by_obj_user(user=user, obj=obj, ftype=ftype)
+  ftype.unflag_url = generate_unflag_url(user=user, obj=obj, ftype=ftype.slug)
+  ftype.flag_url = generate_flag_url(user=user, obj=obj, ftype=ftype.slug)
+
   try:
     flag = ftype.flags.filter_by_obj_user(obj=obj, user=user)[0]
     ftype.set = True
-  except:
-    ftype.set = True
+  except :
+    ftype.set = False
 
   return ftype
+
+@register.inclusion_tag('flag/flag.html')
+def render_flag(ftype, *args, **kwargs):
+  '''
+  Returns a object with info the the flagtype and if its set for the provided user
+  {% flag type user=user obj=obj as flag %}
+  '''
+  user = kwargs.get('user', None)
+  obj = kwargs['obj']
+
+  ftype = FlagType.objects.filter(slug=ftype)[0]
+  ftype.unflag_url = generate_unflag_url(user=user, obj=obj, ftype=ftype.slug)
+  ftype.flag_url = generate_flag_url(user=user, obj=obj, ftype=ftype.slug)
+
+  try:
+    flag = ftype.flags.filter_by_obj_user(obj=obj, user=user)[0]
+    ftype.set = True
+  except :
+    ftype.set = False
+  
+  return {'user': user, 'obj': obj, 'flag': ftype}
 
 @register.assignment_tag
 def get_flags(ftype, *args, **kwargs):
@@ -38,7 +59,6 @@ def get_flags(ftype, *args, **kwargs):
     {% get_flags type user=user as flags %}
   '''
   user = kwargs.get('user', None)
-  #obj = kwargs.get('obj', None)
 
   ftype = FlagType.objects.filter(slug=ftype)[0]
 

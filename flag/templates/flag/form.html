@@ -1,7 +1,0 @@
-<form class="flag-form" action="{% url flag-submit %}" method="post">
-{% csrf_token %}
-<table>
-{{flag_form}}
-</table>
-<button class="btn">{% if flag_form.instance.id %}  {{flag_form.instance.ftype.unflag_label}}  {%  else  %} {{flag_form.instance.ftype.label}} {%  endif  %}</button>
-</form>
