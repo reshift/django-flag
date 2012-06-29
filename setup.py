@@ -5,7 +5,7 @@ long_description = open('README.md').read()
  
 setup(
   name='django-flag',
-  version='0.2.4',
+  version='1.0.0',
   description='Flags for django',
   long_description=long_description,
   author='Sjoerd Arendsen',
