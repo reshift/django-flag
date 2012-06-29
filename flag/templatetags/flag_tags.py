@@ -36,7 +36,7 @@ def flag(ftype, *args, **kwargs):
 def render_flag(ftype, *args, **kwargs):
   '''
   Returns a object with info the the flagtype and if its set for the provided user
-  {% flag type user=user obj=obj as flag %}
+  {% render_flag [type] user=user obj=obj %}
   '''
   user = kwargs.get('user', None)
   obj = kwargs['obj']
@@ -68,7 +68,7 @@ def get_flags(ftype, *args, **kwargs):
   return flags
 
 @register.simple_tag(takes_context=True)
-def is_flagged(context, obj, ftype):
+def is_flagged(context, ftype, obj):
   """
   Returns whether or not the user has flagged the given object
   """
@@ -76,10 +76,9 @@ def is_flagged(context, obj, ftype):
   return len(flag) == 1
 
 @register.simple_tag(takes_context=True)
-def flag_url(context, obj, ftype):
+def flag_url(context, ftype, obj):
   return generate_unflag_url(ftype=ftype, user=context['request'].user, obj=obj)
 
 @register.simple_tag(takes_context=True)
-def unflag_url(context, obj, ftype):
+def unflag_url(context, ftype, obj):
   return generate_flag_url(ftype=ftype, user=context['request'].user, obj=obj)
-
