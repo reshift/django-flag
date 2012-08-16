@@ -15,7 +15,7 @@ from django.forms.models import model_to_dict
 from django.template.loader import render_to_string
 from django.views.generic import ListView
 from django.views.decorators.cache import never_cache
-from flag.utils import generate_unflag_url
+from flag.utils import generate_unflag_url, generate_flag_url
 import hashlib
 
 @login_required
