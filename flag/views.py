@@ -63,7 +63,7 @@ def flag(request, ftype, ct, pk, token, action=None):
       success = True
       state = 'unflagged'
     except Flag.DoesNotExist:
-      pass
+      state = 'unflagged'
  
   if(request.is_ajax()):
     data = {}
