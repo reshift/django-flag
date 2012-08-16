@@ -1,6 +1,7 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden
+from django.template.loader import render_to_string
 from django.template import RequestContext
 from django.shortcuts import render_to_response, redirect
 from django.contrib.contenttypes.models import ContentType
@@ -67,6 +68,10 @@ def flag(request, ftype, ct, pk, token, action=None):
       state = 'unflagged'
     except Flag.DoesNotExist:
       state = 'unflagged'
+  
+  # Add some extra info
+  ftype.unflag_url = generate_unflag_url(user=user, obj=flag.content_object, ftype=ftype.slug)
+  ftype.flag_url = generate_flag_url(user=user, obj=flag.content_object, ftype=ftype.slug)
  
   if(request.is_ajax()):
     if response == 'html':
@@ -76,8 +81,6 @@ def flag(request, ftype, ct, pk, token, action=None):
       data = {}
       data['success'] = str(success)
       data['state'] = str(state)
-      #data['unflag_url'] = generate_unflag_url(ftype, request.user, obj)
-      #data['flag_url'] = str(state)
       data['ftype'] = model_to_dict(ftype)
       return HttpResponse(simplejson.dumps(data), content_type="text/javascript")
   else:
