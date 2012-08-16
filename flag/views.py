@@ -29,6 +29,8 @@ def flag(request, ftype, ct, pk, token, action=None):
     
   # Security check
   token_check = hashlib.md5(settings.SECRET_KEY + str(ct) + str(pk)).hexdigest()
+  
+  response = data.get('response', 'json')
 
   if token_check != token:
     return HttpResponseForbidden()
@@ -67,13 +69,17 @@ def flag(request, ftype, ct, pk, token, action=None):
       state = 'unflagged'
  
   if(request.is_ajax()):
-    data = {}
-    data['success'] = str(success)
-    data['state'] = str(state)
-    #data['unflag_url'] = generate_unflag_url(ftype, request.user, obj)
-    #data['flag_url'] = str(state)
-    data['ftype'] = model_to_dict(ftype)
-    return HttpResponse(simplejson.dumps(data), content_type="text/javascript")
+    if response == 'html':
+      output = render_to_string('flag/flag.html', {'user': request.user, 'flag': ftype}, context_instance=RequestContext(request))
+      return HttpResponse(output)
+    else:  
+      data = {}
+      data['success'] = str(success)
+      data['state'] = str(state)
+      #data['unflag_url'] = generate_unflag_url(ftype, request.user, obj)
+      #data['flag_url'] = str(state)
+      data['ftype'] = model_to_dict(ftype)
+      return HttpResponse(simplejson.dumps(data), content_type="text/javascript")
   else:
     next = data.get("next", request.META.get('HTTP_REFERER'))
     return HttpResponseRedirect(next)
