@@ -13,9 +13,11 @@ from django.contrib.auth.decorators import login_required
 from django.forms.models import model_to_dict
 from django.template.loader import render_to_string
 from django.views.generic import ListView
+from django.views.decorators.cache import never_cache
 import md5
 
 @login_required
+@never_cache
 def flag(request, ftype, ct, pk, token, action=None):
   success = False
 
