@@ -70,8 +70,8 @@ def flag(request, ftype, ct, pk, token, action=None):
       state = 'unflagged'
   
   # Add some extra info
-  ftype.unflag_url = generate_unflag_url(user=user, obj=flag.content_object, ftype=ftype.slug)
-  ftype.flag_url = generate_flag_url(user=user, obj=flag.content_object, ftype=ftype.slug)
+  ftype.unflag_url = generate_unflag_url(user=request.user, obj=flag.content_object, ftype=ftype.slug)
+  ftype.flag_url = generate_flag_url(user=request.user, obj=flag.content_object, ftype=ftype.slug)
  
   if(request.is_ajax()):
     if response == 'html':
