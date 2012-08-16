@@ -51,7 +51,8 @@ def flag(request, ftype, ct, pk, token, action=None):
   if action == "flag":
     try:
       flag = Flag.objects.get_or_create(**kwargs)
-      success = True 
+      success = True
+      state = 'flagged'
     except Flag.DoesNotExist:
       success = False
       
@@ -60,6 +61,7 @@ def flag(request, ftype, ct, pk, token, action=None):
       flag = Flag.objects.get(**kwargs)
       flag.delete()
       success = True
+      state = 'unflagged'
     except Flag.DoesNotExist:
       pass
  
