@@ -68,6 +68,7 @@ def flag(request, ftype, ct, pk, token, action=None):
   if(request.is_ajax()):
     data = {}
     data['success'] = str(success)
+    data['state'] = str(state)
     data['ftype'] = model_to_dict(ftype)
     return HttpResponse(simplejson.dumps(data), content_type="text/javascript")
   else:
