@@ -21,5 +21,5 @@ def generate_flag_url(ftype, user, obj):
 
 def flag_generate_token(obj, user):
   content_type, object_pk = ContentType.objects.get_for_model(obj), obj.pk
-  token = hashlib.md5.new(settings.SECRET_KEY + str(content_type.id) + str(object_pk)).hexdigest()
+  token = hashlib.md5(settings.SECRET_KEY + str(content_type.id) + str(object_pk)).hexdigest()
   return token
