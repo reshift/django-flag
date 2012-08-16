@@ -14,7 +14,7 @@ from django.forms.models import model_to_dict
 from django.template.loader import render_to_string
 from django.views.generic import ListView
 from django.views.decorators.cache import never_cache
-import md5
+import hashlib
 
 @login_required
 @never_cache
@@ -27,7 +27,7 @@ def flag(request, ftype, ct, pk, token, action=None):
     data = request.GET.copy()
     
   # Security check
-  token_check = md5.new(settings.SECRET_KEY + str(ct) + str(pk)).hexdigest()
+  token_check = hashlib.md5(settings.SECRET_KEY + str(ct) + str(pk)).hexdigest()
 
   if token_check != token:
     return HttpResponseForbidden()
