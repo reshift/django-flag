@@ -70,7 +70,7 @@ def flag(request, ftype, ct, pk, token, action=None):
       state = 'unflagged'
   
   # Add some extra info
-  obj = ctype.get_object_for_this_type(pk=object_id)
+  obj = ctype.get_object_for_this_type(pk=pk)
   ftype.unflag_url = generate_unflag_url(user=request.user, obj=obj, ftype=ftype.slug)
   ftype.flag_url = generate_flag_url(user=request.user, obj=obj, ftype=ftype.slug)
  
