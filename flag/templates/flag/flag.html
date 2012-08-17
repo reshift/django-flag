@@ -1,5 +1,5 @@
 {% if flag.set %}
-	<a class="{{flag.slug}} flag" href="{{flag.unflag_url}}">{{flag.unflag_label}}</a>
+	<a class="{{flag.slug}} flag flagged" href="{{flag.unflag_url}}">{{flag.unflag_label}}</a>
 {% else %}
 	<a class="{{flag.slug}} flag" href="{{flag.flag_url}}">{{flag.label}}</a>
 {% endif %}
