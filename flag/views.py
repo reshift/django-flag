@@ -41,6 +41,7 @@ def flag(request, ftype, ct, pk, token, action=None):
   
   # Get Flag Type
   ftype = FlagType.objects.get(slug=ftype)
+  ftype.set = False
   
   # Build our query filter
   kwargs = {
@@ -57,6 +58,7 @@ def flag(request, ftype, ct, pk, token, action=None):
       flag = Flag.objects.get_or_create(**kwargs)
       success = True
       state = 'flagged'
+      ftype.set = True
     except Flag.DoesNotExist:
       success = False
       
