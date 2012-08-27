@@ -67,6 +67,13 @@ def get_flags(ftype, *args, **kwargs):
 
   return flags
 
+@register.simple_tag()
+def flag_count(ftype, obj):
+  """
+  Returns flag count for a type
+  """
+  return Flag.objects.filter_for_obj(obj=obj, ftype__slug=ftype).count()
+
 @register.simple_tag(takes_context=True)
 def is_flagged(context, ftype, obj):
   """
