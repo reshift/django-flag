@@ -64,7 +64,7 @@ def get_flags(ftype, *args, **kwargs):
   ftype = FlagType.objects.filter(slug=ftype)[0]
 
   if user:
-    flags = Flag.objects.filter(user=user, ftype=ftype)
+    flags = Flag.objects.filter(user=user, ftype=ftype, *args, **kwargs)
 
   return flags
 
