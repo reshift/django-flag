@@ -69,16 +69,11 @@ def get_flags(ftype, *args, **kwargs):
   return flags
 
 @register.simple_tag()
-def flag_count(ftype, *objs):
+def flag_count(ftype, obj):
   """
   Returns flag count for a type
   """
-  query = Q()
-  for obj in objs.items():
-    content_type, object_pk = ContentType.objects.get_for_model(obj), obj.pk
-    query = query | Q(content_type=content_type, object_pk=object_pk)
-
-  return Flag.objects.filter(ftype__slug=ftype).filter(query).count()
+  return Flag.objects.filter_for_obj(obj=obj, ftype__slug=ftype).count()
 
 @register.simple_tag(takes_context=True)
 def is_flagged(context, ftype, obj):
