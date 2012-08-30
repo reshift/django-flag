@@ -69,7 +69,7 @@ def get_flags(ftype, *args, **kwargs):
   return flags
 
 @register.simple_tag()
-def flag_count(ftype, list(objs)):
+def flag_count(ftype, list(*objs)):
   """
   Returns flag count for a type
   """
