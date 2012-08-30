@@ -7,6 +7,7 @@ from django.utils.encoding import smart_unicode
 from flag.models import *
 from flag.utils import *
 from django.core.urlresolvers import reverse
+from django.db.models import Q
 import md5
 
 register = template.Library()
@@ -68,11 +69,16 @@ def get_flags(ftype, *args, **kwargs):
   return flags
 
 @register.simple_tag()
-def flag_count(ftype, obj):
+def flag_count(ftype, *objs):
   """
   Returns flag count for a type
   """
-  return Flag.objects.filter_for_obj(obj=obj, ftype__slug=ftype).count()
+  query = Q()
+  for obj in objs:
+    content_type, object_pk = ContentType.objects.get_for_model(obj), obj.pk
+    query = query | Q(content_type=content_type, object_pk=object_pk)
+
+  return flags = Flag.objects.filter(ftype__slug=ftype).filter(query).count()
 
 @register.simple_tag(takes_context=True)
 def is_flagged(context, ftype, obj):
