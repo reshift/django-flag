@@ -55,7 +55,12 @@ def flag(request, ftype, ct, pk, token, action=None):
   # Execute, either set a flag or remove it
   if action == "flag":
     try:
-      flag = Flag.objects.get_or_create(**kwargs)
+      try:
+        flag = Flag.objects.get(**kwargs)
+      except:
+        flag = Flag(**kwargs)
+        flag.save()
+  
       success = True
       state = 'flagged'
       ftype.set = True
