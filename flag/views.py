@@ -55,15 +55,10 @@ def flag(request, ftype, ct, pk, token, action=None):
   # Execute, either set a flag or remove it
   if action == "flag":
     try:
-      try:
-        flag = Flag.objects.get(**kwargs)
-      except:
-        flag = Flag(**kwargs)
-        flag.save()
-  
+      flag = Flag.objects.get(**kwargs)
+      flag.delete()
       success = True
-      state = 'flagged'
-      ftype.set = True
+      state = 'unflagged'
     except Flag.DoesNotExist:
       success = False
       
